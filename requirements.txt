@@ -1,0 +1,7 @@
+aiohttp
+beautifulsoup4
+PyMuPDF
+playwright==1.36.0
+fake-useragent
+markdownify 
+requests
