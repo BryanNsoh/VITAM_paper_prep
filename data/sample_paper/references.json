@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Paper References",
+    "description": "A collection of references for studies included in a review, containing title, DOI, and full text links.",
+    "type": "object",
+    "additionalProperties": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the research paper"
+        },
+        "doi": {
+          "type": ["string", "null"],
+          "description": "Digital Object Identifier (DOI) of the research paper, may be null if not available"
+        },
+        "links": {
+          "type": "array",
+          "description": "List of URLs likely to contain the full text of the paper",
+          "items": {
+            "type": "string",
+            "description": "A URL pointing to the paper, a DOI link, or a trial registry entry"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "doi",
+        "links"
+      ]
+    }
+  }

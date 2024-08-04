@@ -138,7 +138,7 @@ cython_debug/
 
 # Folders #
 ############
-data/bergworth_sugar_cardiovascular/scraped_references/
-data/bergworth_sugar_cardiovascular/*.md
-data/bergworth_sugar_cardiovascular/*.json
+data/*
+!data/sample_paper/
+!data/sample_paper/**
 
