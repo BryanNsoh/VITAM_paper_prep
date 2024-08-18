@@ -1,0 +1,4094 @@
+Context extraction timestamp: 20240818_110053
+
+<repository_structure>
+<directory name="Automated Paper Sourcing">
+    <file>
+        <name>.env</name>
+        <path>.env</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>.gitignore</name>
+        <path>.gitignore</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>downloaded_paper.pdf</name>
+        <path>downloaded_paper.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>README.md</name>
+        <path>README.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>repo_context_extractor.py</name>
+        <path>repo_context_extractor.py</path>
+        <content>
+import os
+import datetime
+
+EXCLUDED_DIRS = {".git", "__pycache__", "node_modules", ".venv"}
+FULL_CONTENT_EXTENSIONS = {".py", ".toml", ".dbml", ".yaml"}
+
+def create_file_element(file_path, root_folder):
+    relative_path = os.path.relpath(file_path, root_folder)
+    file_name = os.path.basename(file_path)
+    file_extension = os.path.splitext(file_name)[1]
+
+    file_element = [
+        f"    <file>\n        <name>{file_name}</name>\n        <path>{relative_path}</path>\n"
+    ]
+
+    if file_extension in FULL_CONTENT_EXTENSIONS:
+        file_element.append("        <content>\n")
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                file_element.append(file.read())
+        except UnicodeDecodeError:
+            file_element.append("Binary or non-UTF-8 content not displayed")
+        file_element.append("\n        </content>\n")
+    else:
+        file_element.append("        <content>Full content not provided</content>\n")
+
+    file_element.append("    </file>\n")
+    return "".join(file_element)
+
+def get_repo_structure(root_folder):
+    structure = ["<repository_structure>\n"]
+
+    for subdir, dirs, files in os.walk(root_folder):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        level = subdir.replace(root_folder, "").count(os.sep)
+        indent = " " * 4 * level
+        relative_subdir = os.path.relpath(subdir, root_folder)
+
+        structure.append(f'{indent}<directory name="{os.path.basename(subdir)}">\n')
+        for file in files:
+            file_path = os.path.join(subdir, file)
+            file_element = create_file_element(file_path, root_folder)
+            structure.append(file_element)
+        structure.append(f"{indent}</directory>\n")
+
+    structure.append("</repository_structure>\n")
+    return "".join(structure)
+
+def main():
+    root_folder = os.getcwd()  # Use the current working directory
+    base_dir = os.path.basename(root_folder)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(root_folder, f"{base_dir}_context_{timestamp}.txt")
+
+    # Delete the previous output file if it exists
+    for file in os.listdir(root_folder):
+        if file.startswith(f"{base_dir}_context_") and file.endswith(".txt"):
+            os.remove(os.path.join(root_folder, file))
+            print(f"Deleted previous context file: {file}")
+
+    repo_structure = get_repo_structure(root_folder)
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(f"Context extraction timestamp: {timestamp}\n\n")
+        f.write(repo_structure)
+
+    print(f"Fresh repository context has been extracted to {output_file}")
+
+if __name__ == "__main__":
+    main()
+        </content>
+    </file>
+    <file>
+        <name>requirements.txt</name>
+        <path>requirements.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>scraper.log</name>
+        <path>scraper.log</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>setup.py</name>
+        <path>setup.py</path>
+        <content>
+# setup.py
+import subprocess
+import sys
+from setuptools import setup, find_packages
+from setuptools.command.develop import develop
+from setuptools.command.install import install
+
+class PostInstallCommand(install):
+    def run(self):
+        install.run(self)
+        self.install_playwright()
+
+    def install_playwright(self):
+        subprocess.check_call([sys.executable, "-m", "playwright", "install"])
+
+class PostDevelopCommand(develop):
+    def run(self):
+        develop.run(self)
+        self.install_playwright()
+
+    def install_playwright(self):
+        subprocess.check_call([sys.executable, "-m", "playwright", "install"])
+
+with open('README.md', 'r', encoding='utf-8') as f:
+    long_description = f.read()
+
+setup(
+    name='vitam-paper-prep',
+    version='0.1.0',
+    author='Your Name',
+    author_email='your.email@example.com',
+    description='A tool for processing academic paper references',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/yourusername/VITAM_paper_prep',
+    packages=find_packages(),
+    install_requires=[
+        'aiohttp',
+        'beautifulsoup4',
+        'PyMuPDF',
+        'playwright==1.36.0',
+        'fake-useragent',
+        'markdownify',
+        'requests',
+    ],
+    extras_require={
+        'dev': ['pytest', 'pytest-asyncio'],
+    },
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+    ],
+    python_requires='>=3.7',
+    entry_points={
+        'console_scripts': [
+            'process_references=paper_prepper.reference_processor:main',
+        ],
+    },
+    cmdclass={
+        'develop': PostDevelopCommand,
+        'install': PostInstallCommand,
+    },
+)
+        </content>
+    </file>
+    <file>
+        <name>VITAM_paper_prep_context_20240804_102018.txt</name>
+        <path>VITAM_paper_prep_context_20240804_102018.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>VITAM_paper_prep_context_20240804_105523.txt</name>
+        <path>VITAM_paper_prep_context_20240804_105523.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>VITAM_paper_prep_context_20240815_163317.txt</name>
+        <path>VITAM_paper_prep_context_20240815_163317.txt</path>
+        <content>Full content not provided</content>
+    </file>
+</directory>
+    <directory name="data">
+    </directory>
+        <directory name="bergworth_sugar_cardiovascular">
+    <file>
+        <name>Ahmad 2020_full.pdf</name>
+        <path>data\bergworth_sugar_cardiovascular\Ahmad 2020_full.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Black 2006_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Black 2006_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Campos 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Campos 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ebbeling 2020_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Ebbeling 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Geidl-Flueck 2021_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Geidl-Flueck 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Johnson 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Johnson 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lewis 2013_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lewis 2013_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lowndes 2014a_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lowndes 2014a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lowndes 2014b_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lowndes 2014b_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Madero 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Madero 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Maersk 2012_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Maersk 2012_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Maki 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Maki 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mann 1972_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Mann 1972_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Markey 2016_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Markey 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njike 2011_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Njike 2011_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Raben 2002_full.pdf</name>
+        <path>data\bergworth_sugar_cardiovascular\Raben 2002_full.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\bergworth_sugar_cardiovascular\references.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Sanchez-Delgado 2021_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Sanchez-Delgado 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Smith 1996_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Smith 1996_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Surwit 1997_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Surwit 1997_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Umpleby 2017_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Umpleby 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Vazquez-Duran 2016_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Vazquez-Duran 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+        </directory>
+            <directory name="scraped_references">
+            </directory>
+                <directory name="Ahmad 2020">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Black 2006">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Black 2006\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Black 2006\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Campos 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Ebbeling 2020">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Geidl-Flueck 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Geidl-Flueck 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Johnson 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Johnson 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Johnson 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lewis 2013">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lowndes 2014a">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_6.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_6.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lowndes 2014b">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014b\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014b\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Madero 2015">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Madero 2015\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Madero 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Maersk 2012">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_6.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_6.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Maki 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maki 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maki 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Mann 1972">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Mann 1972\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Mann 1972\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Markey 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njike 2011">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Njike 2011\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Njike 2011\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Raben 2002">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Raben 2002\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Raben 2002\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Sanchez-Delgado 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Sanchez-Delgado 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Smith 1996">
+                </directory>
+                <directory name="Surwit 1997">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Surwit 1997\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Surwit 1997\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Umpleby 2017">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Vazquez-Duran 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+        <directory name="iot_ml_review">
+    <file>
+        <name>abdallah_machine_2022_full.md</name>
+        <path>data\iot_ml_review\abdallah_machine_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Abdulaziz_2022_manual.txt</name>
+        <path>data\iot_ml_review\Abdulaziz_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Adeyemi2018_full.md</name>
+        <path>data\iot_ml_review\Adeyemi2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>agyeman_learning-based_2024_full.md</name>
+        <path>data\iot_ml_review\agyeman_learning-based_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ahmed_overview_2023_manual.txt</name>
+        <path>data\iot_ml_review\ahmed_overview_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ahsan_effect_2021_full.md</name>
+        <path>data\iot_ml_review\ahsan_effect_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ajaz_free_2023_full.md</name>
+        <path>data\iot_ml_review\ajaz_free_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ali_increasing_2008_full.md</name>
+        <path>data\iot_ml_review\ali_increasing_2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>atmani_big_2019_manual.txt</name>
+        <path>data\iot_ml_review\atmani_big_2019_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>atzori_internet_2010_full.md</name>
+        <path>data\iot_ml_review\atzori_internet_2010_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>aws_containerization_manual.txt</name>
+        <path>data\iot_ml_review\aws_containerization_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Baek_2021_manual.txt</name>
+        <path>data\iot_ml_review\Baek_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bandi_edge_2022_full.md</name>
+        <path>data\iot_ml_review\bandi_edge_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>basta_towards_2022_manual.txt</name>
+        <path>data\iot_ml_review\basta_towards_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bastidas_pacheco_open_2021_full.md</name>
+        <path>data\iot_ml_review\bastidas_pacheco_open_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>behera_energy-efficient_2022_full.md</name>
+        <path>data\iot_ml_review\behera_energy-efficient_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Benameur_2024_full.md</name>
+        <path>data\iot_ml_review\Benameur_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bentaleb_containerization_2021_manual.txt</name>
+        <path>data\iot_ml_review\bentaleb_containerization_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bhatti_toward_2023_full.md</name>
+        <path>data\iot_ml_review\bhatti_toward_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bica_multi-layer_2019_full.md</name>
+        <path>data\iot_ml_review\bica_multi-layer_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bogena_recent_2022_full.md</name>
+        <path>data\iot_ml_review\bogena_recent_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bottou_large-scale_2010_manual.txt</name>
+        <path>data\iot_ml_review\bottou_large-scale_2010_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Bounoua_2024_full.md</name>
+        <path>data\iot_ml_review\Bounoua_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bryant_development_2023_full.md</name>
+        <path>data\iot_ml_review\bryant_development_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bulusu_uav-based_2023_full.md</name>
+        <path>data\iot_ml_review\bulusu_uav-based_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Burri_2023_manual.txt</name>
+        <path>data\iot_ml_review\Burri_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>cabello-solorzano_impact_2023_manual.txt</name>
+        <path>data\iot_ml_review\cabello-solorzano_impact_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>caceres_smart_2021_full.md</name>
+        <path>data\iot_ml_review\caceres_smart_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>camilo_impact_2022_manual.txt</name>
+        <path>data\iot_ml_review\camilo_impact_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>cantor_making_2021_full.md</name>
+        <path>data\iot_ml_review\cantor_making_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>carrasco_anomaly_2021_manual.txt</name>
+        <path>data\iot_ml_review\carrasco_anomaly_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>carvalho_edge_2021_full.md</name>
+        <path>data\iot_ml_review\carvalho_edge_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>chadha_influence_2019_full.md</name>
+        <path>data\iot_ml_review\chadha_influence_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>chamara_aicropcam_2023_full.md</name>
+        <path>data\iot_ml_review\chamara_aicropcam_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>choi_unsupervised_2024_manual.txt</name>
+        <path>data\iot_ml_review\choi_unsupervised_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Colaizzi2003a_manual.txt</name>
+        <path>data\iot_ml_review\Colaizzi2003a_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Colaizzi2003_manual.txt</name>
+        <path>data\iot_ml_review\Colaizzi2003_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Conde_2024_full.md</name>
+        <path>data\iot_ml_review\Conde_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>CostaFilho2020_full.md</name>
+        <path>data\iot_ml_review\CostaFilho2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>crammer_online_2006_full.md</name>
+        <path>data\iot_ml_review\crammer_online_2006_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>dolaptsis_hybrid_2024_full.md</name>
+        <path>data\iot_ml_review\dolaptsis_hybrid_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>dursun_wireless_2011_manual.txt</name>
+        <path>data\iot_ml_review\dursun_wireless_2011_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Egipto_2023_full.md</name>
+        <path>data\iot_ml_review\Egipto_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>failed_scrapes.json</name>
+        <path>data\iot_ml_review\failed_scrapes.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>FAO2009_full.md</name>
+        <path>data\iot_ml_review\FAO2009_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>feng_study_2019_full.md</name>
+        <path>data\iot_ml_review\feng_study_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>fraz_smart_2023_full.md</name>
+        <path>data\iot_ml_review\fraz_smart_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Friha2021_full.md</name>
+        <path>data\iot_ml_review\Friha2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>friha_internet_2021_full.md</name>
+        <path>data\iot_ml_review\friha_internet_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Gelete_2024_full.md</name>
+        <path>data\iot_ml_review\Gelete_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>gerhards_challenges_2019_full.md</name>
+        <path>data\iot_ml_review\gerhards_challenges_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Gualpa_2023_manual.txt</name>
+        <path>data\iot_ml_review\Gualpa_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>gubbi_internet_2013_full.md</name>
+        <path>data\iot_ml_review\gubbi_internet_2013_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>gutierrez_automated_2014_full.md</name>
+        <path>data\iot_ml_review\gutierrez_automated_2014_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>guzinski_modelling_2020_full.md</name>
+        <path>data\iot_ml_review\guzinski_modelling_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>hadebe_drought_2016_full.md</name>
+        <path>data\iot_ml_review\hadebe_drought_2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>hamdan_edge-computing_2020_full.md</name>
+        <path>data\iot_ml_review\hamdan_edge-computing_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>hatzivasilis_interoperability_2018_manual.txt</name>
+        <path>data\iot_ml_review\hatzivasilis_interoperability_2018_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>he_agricultural_2021_full.md</name>
+        <path>data\iot_ml_review\he_agricultural_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Jain_2023_full.md</name>
+        <path>data\iot_ml_review\Jain_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Jim_nez_2022_full.md</name>
+        <path>data\iot_ml_review\Jim_nez_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>joshi_arima-pid_2023_full.md</name>
+        <path>data\iot_ml_review\joshi_arima-pid_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kadu_2024_manual.txt</name>
+        <path>data\iot_ml_review\Kadu_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>kaptein_review_2019_manual.txt</name>
+        <path>data\iot_ml_review\kaptein_review_2019_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Katimbo2022_full.md</name>
+        <path>data\iot_ml_review\Katimbo2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kaur_2024_manual.txt</name>
+        <path>data\iot_ml_review\Kaur_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>kaur_protecting_2022_full.md</name>
+        <path>data\iot_ml_review\kaur_protecting_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>kersebaum_process-based_2023_full.md</name>
+        <path>data\iot_ml_review\kersebaum_process-based_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>khanna_evolution_2019_full.md</name>
+        <path>data\iot_ml_review\khanna_evolution_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Khan_2017_manual.txt</name>
+        <path>data\iot_ml_review\Khan_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>khorshidi_agent-based_2024_full.md</name>
+        <path>data\iot_ml_review\khorshidi_agent-based_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>kim_massive_2021_full.md</name>
+        <path>data\iot_ml_review\kim_massive_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>klein_closed_2018_full.md</name>
+        <path>data\iot_ml_review\klein_closed_2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Laha_2022_manual.txt</name>
+        <path>data\iot_ml_review\Laha_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>langer_intentions_2024_full.md</name>
+        <path>data\iot_ml_review\langer_intentions_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>langer_legacy_2016_full.md</name>
+        <path>data\iot_ml_review\langer_legacy_2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>lena_evaluation_2020_manual.txt</name>
+        <path>data\iot_ml_review\lena_evaluation_2020_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>liu_application_2023_full.md</name>
+        <path>data\iot_ml_review\liu_application_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lopez-Morales2020_full.md</name>
+        <path>data\iot_ml_review\Lopez-Morales2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>lopez-riquelme_software_2017_full.md</name>
+        <path>data\iot_ml_review\lopez-riquelme_software_2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mahalakshmi_2018_manual.txt</name>
+        <path>data\iot_ml_review\Mahalakshmi_2018_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>manning_threat_2023_full.md</name>
+        <path>data\iot_ml_review\manning_threat_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>maria_manuel_vianny_water_2022_full.md</name>
+        <path>data\iot_ml_review\maria_manuel_vianny_water_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Marsh-Hunn2019_full.md</name>
+        <path>data\iot_ml_review\Marsh-Hunn2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>masseroni_evaluating_2018_full.md</name>
+        <path>data\iot_ml_review\masseroni_evaluating_2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>medina_distributed_2023_full.md</name>
+        <path>data\iot_ml_review\medina_distributed_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>mehmood_optimizing_2023_full.md</name>
+        <path>data\iot_ml_review\mehmood_optimizing_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mitchell2012_manual.txt</name>
+        <path>data\iot_ml_review\Mitchell2012_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>mokhtari_review_2023_manual.txt</name>
+        <path>data\iot_ml_review\mokhtari_review_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>mokhtar_prediction_2023_full.md</name>
+        <path>data\iot_ml_review\mokhtar_prediction_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>mondal_kubernetes_2021_full.md</name>
+        <path>data\iot_ml_review\mondal_kubernetes_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>MQTT_manual.txt</name>
+        <path>data\iot_ml_review\MQTT_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>My Library.bib</name>
+        <path>data\iot_ml_review\My Library.bib</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Nanda2018_full.md</name>
+        <path>data\iot_ml_review\Nanda2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>navarro-hellin_decision_2016_full.md</name>
+        <path>data\iot_ml_review\navarro-hellin_decision_2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>nebbione_security_2020_full.md</name>
+        <path>data\iot_ml_review\nebbione_security_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>nevavuori_crop_2020_full.md</name>
+        <path>data\iot_ml_review\nevavuori_crop_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Nguyen2017_full.md</name>
+        <path>data\iot_ml_review\Nguyen2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>nie_agris_2023_full.md</name>
+        <path>data\iot_ml_review\nie_agris_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>OGC_SensorML_manual.txt</name>
+        <path>data\iot_ml_review\OGC_SensorML_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>OGC_SensorThingsAPI_manual.txt</name>
+        <path>data\iot_ml_review\OGC_SensorThingsAPI_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>oksanen_iso_2005_manual.txt</name>
+        <path>data\iot_ml_review\oksanen_iso_2005_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>olliver_isobus_2023_full.md</name>
+        <path>data\iot_ml_review\olliver_isobus_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>onnxruntime_manual.txt</name>
+        <path>data\iot_ml_review\onnxruntime_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>osroosh2015automatic_full.md</name>
+        <path>data\iot_ml_review\osroosh2015automatic_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ouakasse_coap_2022_manual.txt</name>
+        <path>data\iot_ml_review\ouakasse_coap_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ould-sidi_model-based_2011_full.md</name>
+        <path>data\iot_ml_review\ould-sidi_model-based_2011_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>pan_data_2023_manual.txt</name>
+        <path>data\iot_ml_review\pan_data_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>pattnaik_gmm_2021_full.md</name>
+        <path>data\iot_ml_review\pattnaik_gmm_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>pawar_evaluation_2023_full.md</name>
+        <path>data\iot_ml_review\pawar_evaluation_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>peng_fine-grained_2024_full.md</name>
+        <path>data\iot_ml_review\peng_fine-grained_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>penzotti_enabling_2024_manual.txt</name>
+        <path>data\iot_ml_review\penzotti_enabling_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>perea_optimization_2016_manual.txt</name>
+        <path>data\iot_ml_review\perea_optimization_2016_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>playan_modernization_2006_full.md</name>
+        <path>data\iot_ml_review\playan_modernization_2006_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Pramanik_2022_full.md</name>
+        <path>data\iot_ml_review\Pramanik_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>premkumar_iot-enabled_2022_full.md</name>
+        <path>data\iot_ml_review\premkumar_iot-enabled_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>quy_iot-enabled_2022_full.md</name>
+        <path>data\iot_ml_review\quy_iot-enabled_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rahi_2023_manual.txt</name>
+        <path>data\iot_ml_review\Rahi_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rajasekhar_2023_manual.txt</name>
+        <path>data\iot_ml_review\Rajasekhar_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ramachandran_exploiting_2022_full.md</name>
+        <path>data\iot_ml_review\ramachandran_exploiting_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rana_2024_manual.txt</name>
+        <path>data\iot_ml_review\Rana_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ray_internet_2017_manual.txt</name>
+        <path>data\iot_ml_review\ray_internet_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\iot_ml_review\references.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Regev_1990_manual.txt</name>
+        <path>data\iot_ml_review\Regev_1990_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ribeiro_2021_manual.txt</name>
+        <path>data\iot_ml_review\Ribeiro_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ribeiro_junior_federated_2024_full.md</name>
+        <path>data\iot_ml_review\ribeiro_junior_federated_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>robles_iot_2015_full.md</name>
+        <path>data\iot_ml_review\robles_iot_2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>rockstrom_future_2009_full.md</name>
+        <path>data\iot_ml_review\rockstrom_future_2009_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>rutta_understanding_2022_full.md</name>
+        <path>data\iot_ml_review\rutta_understanding_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>saffari_-line_2009_manual.txt</name>
+        <path>data\iot_ml_review\saffari_-line_2009_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>saikai_deep_2023_full.md</name>
+        <path>data\iot_ml_review\saikai_deep_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>sandeep_integration_2023_manual.txt</name>
+        <path>data\iot_ml_review\sandeep_integration_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Schmitz_2008_manual.txt</name>
+        <path>data\iot_ml_review\Schmitz_2008_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>sele_putting_2024_manual.txt</name>
+        <path>data\iot_ml_review\sele_putting_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>shafi_precision_2019_full.md</name>
+        <path>data\iot_ml_review\shafi_precision_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>shahri_extending_2022_full.md</name>
+        <path>data\iot_ml_review\shahri_extending_2022_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Sharma_2020_full.md</name>
+        <path>data\iot_ml_review\Sharma_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>shi_state---art_2019_full.md</name>
+        <path>data\iot_ml_review\shi_state---art_2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>simmhan_survey_2005_manual.txt</name>
+        <path>data\iot_ml_review\simmhan_survey_2005_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>singh_model-predictive_2023_manual.txt</name>
+        <path>data\iot_ml_review\singh_model-predictive_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>soundarapandian_lossless_2023_full.md</name>
+        <path>data\iot_ml_review\soundarapandian_lossless_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Srivastava_2023_manual.txt</name>
+        <path>data\iot_ml_review\Srivastava_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>srivastava_machine_2024_full.md</name>
+        <path>data\iot_ml_review\srivastava_machine_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>successful_scrapes.json</name>
+        <path>data\iot_ml_review\successful_scrapes.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>talavera_review_2017_full.md</name>
+        <path>data\iot_ml_review\talavera_review_2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>taleb_big_2021_full.md</name>
+        <path>data\iot_ml_review\taleb_big_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>tang_application_2024_manual.txt</name>
+        <path>data\iot_ml_review\tang_application_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Tan_2024_manual.txt</name>
+        <path>data\iot_ml_review\Tan_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>teh_sensor_2020_full.md</name>
+        <path>data\iot_ml_review\teh_sensor_2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>tsang_applying_2016_full.md</name>
+        <path>data\iot_ml_review\tsang_applying_2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Tzerakis_2023_full.md</name>
+        <path>data\iot_ml_review\Tzerakis_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>tzounis_internet_2017_full.md</name>
+        <path>data\iot_ml_review\tzounis_internet_2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Uddin_2018_full.md</name>
+        <path>data\iot_ml_review\Uddin_2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>usigbe_enhancing_2023_full.md</name>
+        <path>data\iot_ml_review\usigbe_enhancing_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>vallejo-gomez_smart_2023_manual.txt</name>
+        <path>data\iot_ml_review\vallejo-gomez_smart_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>venkatapur_review_2017_manual.txt</name>
+        <path>data\iot_ml_review\venkatapur_review_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>verdouw_virtualization_2023_full.md</name>
+        <path>data\iot_ml_review\verdouw_virtualization_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>vidican_using_2023_full.md</name>
+        <path>data\iot_ml_review\vidican_using_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wagner_using_2023_manual.txt</name>
+        <path>data\iot_ml_review\wagner_using_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wang_comprehensive_2024_full.md</name>
+        <path>data\iot_ml_review\wang_comprehensive_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wardlaw_application_2004_manual.txt</name>
+        <path>data\iot_ml_review\wardlaw_application_2004_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wmo2018guide_manual.txt</name>
+        <path>data\iot_ml_review\wmo2018guide_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wolfert_big_2017_full.md</name>
+        <path>data\iot_ml_review\wolfert_big_2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>xie_pde-constrained_2024_full.md</name>
+        <path>data\iot_ml_review\xie_pde-constrained_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>zhang_improving_2024_full.md</name>
+        <path>data\iot_ml_review\zhang_improving_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>zhang_optimizing_2024_full.md</name>
+        <path>data\iot_ml_review\zhang_optimizing_2024_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>zoest_data_2021_full.md</name>
+        <path>data\iot_ml_review\zoest_data_2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>zoffoli_potential_2023_full.md</name>
+        <path>data\iot_ml_review\zoffoli_potential_2023_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+        </directory>
+            <directory name="manual_entry">
+    <file>
+        <name>Abdulaziz_2022_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Abdulaziz_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ahmed_overview_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\ahmed_overview_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Anil_Sai_Kumar_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Anil_Sai_Kumar_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>atmani_big_2019_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\atmani_big_2019_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>aws_containerization_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\aws_containerization_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Baek_2021_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Baek_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>basta_towards_2022_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\basta_towards_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bentaleb_containerization_2021_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\bentaleb_containerization_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>bottou_large-scale_2010_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\bottou_large-scale_2010_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Burri_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Burri_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>cabello-solorzano_impact_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\cabello-solorzano_impact_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>camilo_impact_2022_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\camilo_impact_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>carrasco_anomaly_2021_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\carrasco_anomaly_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>choi_unsupervised_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\choi_unsupervised_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Colaizzi2003a_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Colaizzi2003a_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Colaizzi2003_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Colaizzi2003_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>dursun_wireless_2011_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\dursun_wireless_2011_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Gualpa_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Gualpa_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>hatzivasilis_interoperability_2018_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\hatzivasilis_interoperability_2018_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kadu_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Kadu_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>kaptein_review_2019_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\kaptein_review_2019_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kaur_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Kaur_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Khan_2017_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Khan_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Laha_2022_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Laha_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>lena_evaluation_2020_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\lena_evaluation_2020_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mahalakshmi_2018_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Mahalakshmi_2018_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mitchell2012_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Mitchell2012_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>mokhtari_review_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\mokhtari_review_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>MQTT_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\MQTT_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>OGC_SensorML_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\OGC_SensorML_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>OGC_SensorThingsAPI_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\OGC_SensorThingsAPI_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>oksanen_iso_2005_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\oksanen_iso_2005_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>onnxruntime_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\onnxruntime_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ouakasse_coap_2022_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\ouakasse_coap_2022_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>pan_data_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\pan_data_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>penzotti_enabling_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\penzotti_enabling_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>perea_optimization_2016_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\perea_optimization_2016_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rahi_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Rahi_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rajasekhar_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Rajasekhar_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Rana_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Rana_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>ray_internet_2017_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\ray_internet_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Regev_1990_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Regev_1990_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ribeiro_2021_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Ribeiro_2021_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>saffari_-line_2009_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\saffari_-line_2009_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>sandeep_integration_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\sandeep_integration_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Schmitz_2008_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Schmitz_2008_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>sele_putting_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\sele_putting_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>simmhan_survey_2005_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\simmhan_survey_2005_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>singh_model-predictive_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\singh_model-predictive_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Srivastava_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Srivastava_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>tang_application_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\tang_application_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Tan_2024_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\Tan_2024_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>vallejo-gomez_smart_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\vallejo-gomez_smart_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>venkatapur_review_2017_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\venkatapur_review_2017_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wagner_using_2023_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\wagner_using_2023_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wardlaw_application_2004_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\wardlaw_application_2004_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>wmo2018guide_manual.txt</name>
+        <path>data\iot_ml_review\manual_entry\wmo2018guide_manual.txt</path>
+        <content>Full content not provided</content>
+    </file>
+            </directory>
+            <directory name="scraped_references">
+            </directory>
+                <directory name="abdallah_machine_2022">
+                </directory>
+                <directory name="Abdulaziz_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Abdulaziz_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Adeyemi2018">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Adeyemi2018\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="agyeman_learning-based_2024">
+                </directory>
+                <directory name="ahmed_overview_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\ahmed_overview_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="ahsan_effect_2021">
+                </directory>
+                <directory name="ajaz_free_2023">
+                </directory>
+                <directory name="ali_increasing_2008">
+                </directory>
+                <directory name="Anil_Sai_Kumar_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Anil_Sai_Kumar_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="atmani_big_2019">
+                </directory>
+                <directory name="atzori_internet_2010">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\atzori_internet_2010\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="aws_containerization">
+                </directory>
+                <directory name="Baek_2021">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Baek_2021\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="bandi_edge_2022">
+                </directory>
+                <directory name="basta_towards_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\basta_towards_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="bastidas_pacheco_open_2021">
+                </directory>
+                <directory name="behera_energy-efficient_2022">
+                </directory>
+                <directory name="Benameur_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Benameur_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="bentaleb_containerization_2021">
+                </directory>
+                <directory name="bhatti_toward_2023">
+                </directory>
+                <directory name="bica_multi-layer_2019">
+                </directory>
+                <directory name="bogena_recent_2022">
+                </directory>
+                <directory name="bottou_large-scale_2010">
+                </directory>
+                <directory name="Bounoua_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Bounoua_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="bryant_development_2023">
+                </directory>
+                <directory name="bulusu_uav-based_2023">
+                </directory>
+                <directory name="Burri_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Burri_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="cabello-solorzano_impact_2023">
+                </directory>
+                <directory name="caceres_smart_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\caceres_smart_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="camilo_impact_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\camilo_impact_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="cantor_making_2021">
+                </directory>
+                <directory name="carrasco_anomaly_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\carrasco_anomaly_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="carvalho_edge_2021">
+                </directory>
+                <directory name="chadha_influence_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\chadha_influence_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="chamara_aicropcam_2023">
+                </directory>
+                <directory name="choi_unsupervised_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\choi_unsupervised_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Colaizzi2003">
+                </directory>
+                <directory name="Colaizzi2003a">
+                </directory>
+                <directory name="Conde_2024">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Conde_2024\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="CostaFilho2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\CostaFilho2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="crammer_online_2006">
+                </directory>
+                <directory name="dolaptsis_hybrid_2024">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\dolaptsis_hybrid_2024\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="dursun_wireless_2011">
+                </directory>
+                <directory name="Egipto_2023">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Egipto_2023\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="FAO2009">
+                </directory>
+                <directory name="feng_study_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\feng_study_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="fraz_smart_2023">
+                </directory>
+                <directory name="Friha2021">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Friha2021\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="friha_internet_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\friha_internet_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Gelete_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Gelete_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="gerhards_challenges_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\gerhards_challenges_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Gualpa_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Gualpa_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="gubbi_internet_2013">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\gubbi_internet_2013\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="gutierrez_automated_2014">
+                </directory>
+                <directory name="guzinski_modelling_2020">
+                </directory>
+                <directory name="hadebe_drought_2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\hadebe_drought_2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="hamdan_edge-computing_2020">
+                </directory>
+                <directory name="hatzivasilis_interoperability_2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\hatzivasilis_interoperability_2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="he_agricultural_2021">
+                </directory>
+                <directory name="Jain_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Jain_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Jim_nez_2022">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Jim_nez_2022\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="joshi_arima-pid_2023">
+                </directory>
+                <directory name="Kadu_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Kadu_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="kaptein_review_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\kaptein_review_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Katimbo2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Katimbo2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kaur_2024">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Kaur_2024\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="kaur_protecting_2022">
+                </directory>
+                <directory name="kersebaum_process-based_2023">
+                </directory>
+                <directory name="khanna_evolution_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\khanna_evolution_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Khan_2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Khan_2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="khorshidi_agent-based_2024">
+                </directory>
+                <directory name="kim_massive_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\kim_massive_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="klein_closed_2018">
+                </directory>
+                <directory name="Laha_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Laha_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="langer_intentions_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\langer_intentions_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="langer_legacy_2016">
+                </directory>
+                <directory name="lena_evaluation_2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\lena_evaluation_2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="liu_application_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\liu_application_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lopez-Morales2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Lopez-Morales2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="lopez-riquelme_software_2017">
+                </directory>
+                <directory name="Mahalakshmi_2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Mahalakshmi_2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="manning_threat_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\manning_threat_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="maria_manuel_vianny_water_2022">
+                </directory>
+                <directory name="Marsh-Hunn2019">
+                </directory>
+                <directory name="masseroni_evaluating_2018">
+                </directory>
+                <directory name="medina_distributed_2023">
+                </directory>
+                <directory name="mehmood_optimizing_2023">
+                </directory>
+                <directory name="Mitchell2012">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Mitchell2012\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="mokhtari_review_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\mokhtari_review_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="mokhtar_prediction_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\mokhtar_prediction_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="mondal_kubernetes_2021">
+                </directory>
+                <directory name="MQTT">
+                </directory>
+                <directory name="Nanda2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Nanda2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="navarro-hellin_decision_2016">
+                </directory>
+                <directory name="nebbione_security_2020">
+                </directory>
+                <directory name="nevavuori_crop_2020">
+                </directory>
+                <directory name="Nguyen2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Nguyen2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="nie_agris_2023">
+                </directory>
+                <directory name="OGC_SensorML">
+                </directory>
+                <directory name="OGC_SensorThingsAPI">
+                </directory>
+                <directory name="oksanen_iso_2005">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\oksanen_iso_2005\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="olliver_isobus_2023">
+                </directory>
+                <directory name="onnxruntime">
+                </directory>
+                <directory name="osroosh2015automatic">
+                </directory>
+                <directory name="ouakasse_coap_2022">
+                </directory>
+                <directory name="ould-sidi_model-based_2011">
+                </directory>
+                <directory name="pan_data_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\pan_data_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="pattnaik_gmm_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\pattnaik_gmm_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="pawar_evaluation_2023">
+                </directory>
+                <directory name="peng_fine-grained_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\peng_fine-grained_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="penzotti_enabling_2024">
+                </directory>
+                <directory name="perea_optimization_2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\perea_optimization_2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="playan_modernization_2006">
+                </directory>
+                <directory name="Pramanik_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Pramanik_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="premkumar_iot-enabled_2022">
+                </directory>
+                <directory name="quy_iot-enabled_2022">
+                </directory>
+                <directory name="Rahi_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Rahi_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Rajasekhar_2023">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\Rajasekhar_2023\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="ramachandran_exploiting_2022">
+                </directory>
+                <directory name="Rana_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Rana_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="ray_internet_2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\ray_internet_2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Regev_1990">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Regev_1990\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Ribeiro_2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Ribeiro_2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="ribeiro_junior_federated_2024">
+                </directory>
+                <directory name="robles_iot_2015">
+                </directory>
+                <directory name="rockstrom_future_2009">
+                </directory>
+                <directory name="rutta_understanding_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\rutta_understanding_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="saffari_-line_2009">
+                </directory>
+                <directory name="saikai_deep_2023">
+                </directory>
+                <directory name="sandeep_integration_2023">
+                </directory>
+                <directory name="Schmitz_2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Schmitz_2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="sele_putting_2024">
+                </directory>
+                <directory name="shafi_precision_2019">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\shafi_precision_2019\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="shahri_extending_2022">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\shahri_extending_2022\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Sharma_2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Sharma_2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="shi_state---art_2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\shi_state---art_2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="simmhan_survey_2005">
+                </directory>
+                <directory name="singh_model-predictive_2023">
+                </directory>
+                <directory name="soundarapandian_lossless_2023">
+                </directory>
+                <directory name="Srivastava_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Srivastava_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="srivastava_machine_2024">
+                </directory>
+                <directory name="talavera_review_2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\talavera_review_2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="taleb_big_2021">
+                </directory>
+                <directory name="tang_application_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\tang_application_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Tan_2024">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Tan_2024\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="teh_sensor_2020">
+                </directory>
+                <directory name="tsang_applying_2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\tsang_applying_2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Tzerakis_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Tzerakis_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="tzounis_internet_2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\tzounis_internet_2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Uddin_2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\Uddin_2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="usigbe_enhancing_2023">
+                </directory>
+                <directory name="vallejo-gomez_smart_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\vallejo-gomez_smart_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="venkatapur_review_2017">
+                </directory>
+                <directory name="verdouw_virtualization_2023">
+                </directory>
+                <directory name="vidican_using_2023">
+                </directory>
+                <directory name="wagner_using_2023">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\wagner_using_2023\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="wang_comprehensive_2024">
+                </directory>
+                <directory name="wardlaw_application_2004">
+    <file>
+        <name>link_1.md</name>
+        <path>data\iot_ml_review\scraped_references\wardlaw_application_2004\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="wmo2018guide">
+                </directory>
+                <directory name="wolfert_big_2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\iot_ml_review\scraped_references\wolfert_big_2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="xie_pde-constrained_2024">
+                </directory>
+                <directory name="zhang_improving_2024">
+                </directory>
+                <directory name="zhang_optimizing_2024">
+                </directory>
+                <directory name="zoest_data_2021">
+                </directory>
+                <directory name="zoffoli_potential_2023">
+                </directory>
+        <directory name="sample_paper">
+    <file>
+        <name>link_extractioon_prompt.txt</name>
+        <path>data\sample_paper\link_extractioon_prompt.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\sample_paper\references.json</path>
+        <content>Full content not provided</content>
+    </file>
+        </directory>
+        <directory name="taylor_et_al">
+    <file>
+        <name>Adekeye 2020_full.md</name>
+        <path>data\taylor_et_al\Adekeye 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ahorlu 2018_full.md</name>
+        <path>data\taylor_et_al\Ahorlu 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Amarillo 2008_full.md</name>
+        <path>data\taylor_et_al\Amarillo 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2003.pdf</name>
+        <path>data\taylor_et_al\Babu 2003.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2003_full.md</name>
+        <path>data\taylor_et_al\Babu 2003_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2004a.pdf</name>
+        <path>data\taylor_et_al\Babu 2004a.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2004a_full.md</name>
+        <path>data\taylor_et_al\Babu 2004a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2004b_full.md</name>
+        <path>data\taylor_et_al\Babu 2004b_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2008_full.md</name>
+        <path>data\taylor_et_al\Babu 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2010.pdf</name>
+        <path>data\taylor_et_al\Babu 2010.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2010_full.md</name>
+        <path>data\taylor_et_al\Babu 2010_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Banarjee 2019.pdf</name>
+        <path>data\taylor_et_al\Banarjee 2019.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Banerjee 2019_full.md</name>
+        <path>data\taylor_et_al\Banerjee 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Biritwum 2017_full.md</name>
+        <path>data\taylor_et_al\Biritwum 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Bogus 2016_full.md</name>
+        <path>data\taylor_et_al\Bogus 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Cabral 2017_full.md</name>
+        <path>data\taylor_et_al\Cabral 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Cassidy 2016.pdf</name>
+        <path>data\taylor_et_al\Cassidy 2016.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Da-Costa Vroom 2015_full.md</name>
+        <path>data\taylor_et_al\Da-Costa Vroom 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Derua 2018_full.md</name>
+        <path>data\taylor_et_al\Derua 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>failed_scrapes.json</name>
+        <path>data\taylor_et_al\failed_scrapes.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>failed_scrapes_report.txt</name>
+        <path>data\taylor_et_al\failed_scrapes_report.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Gonzales 2019_full.md</name>
+        <path>data\taylor_et_al\Gonzales 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Hussain 2014_full.md</name>
+        <path>data\taylor_et_al\Hussain 2014_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Karki 2018_full.md</name>
+        <path>data\taylor_et_al\Karki 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>King 2011_full.md</name>
+        <path>data\taylor_et_al\King 2011_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kisoka 2016_full.md</name>
+        <path>data\taylor_et_al\Kisoka 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kisoka 2017_full.md</name>
+        <path>data\taylor_et_al\Kisoka 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kouassi 2018_full.md</name>
+        <path>data\taylor_et_al\Kouassi 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2008.pdf</name>
+        <path>data\taylor_et_al\Krentel 2008.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2008_full.md</name>
+        <path>data\taylor_et_al\Krentel 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2012_full.md</name>
+        <path>data\taylor_et_al\Krentel 2012_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2016_full.md</name>
+        <path>data\taylor_et_al\Krentel 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2018_full.md</name>
+        <path>data\taylor_et_al\Krentel 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2020_full.md</name>
+        <path>data\taylor_et_al\Krentel 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2021_full.md</name>
+        <path>data\taylor_et_al\Krentel 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kusi 2020.pdf</name>
+        <path>data\taylor_et_al\Kusi 2020.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kusi 2020_full.md</name>
+        <path>data\taylor_et_al\Kusi 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kyelem 2008_full.md</name>
+        <path>data\taylor_et_al\Kyelem 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Manyeh 2019_full.md</name>
+        <path>data\taylor_et_al\Manyeh 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Manyeh 2020_full.md</name>
+        <path>data\taylor_et_al\Manyeh 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Manyeh 2021_full.md</name>
+        <path>data\taylor_et_al\Manyeh 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mwakitalu 2013_full.md</name>
+        <path>data\taylor_et_al\Mwakitalu 2013_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2012a.pdf</name>
+        <path>data\taylor_et_al\Njomo 2012a.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2012a_full.md</name>
+        <path>data\taylor_et_al\Njomo 2012a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2012b.pdf</name>
+        <path>data\taylor_et_al\Njomo 2012b.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2012c_full.md</name>
+        <path>data\taylor_et_al\Njomo 2012c_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2014_full.md</name>
+        <path>data\taylor_et_al\Njomo 2014_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2020a_full.md</name>
+        <path>data\taylor_et_al\Njomo 2020a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2020b.pdf</name>
+        <path>data\taylor_et_al\Njomo 2020b.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Parker 2013a_full.md</name>
+        <path>data\taylor_et_al\Parker 2013a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Parker 2013_full.md</name>
+        <path>data\taylor_et_al\Parker 2013_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ramaiah 2000_full.md</name>
+        <path>data\taylor_et_al\Ramaiah 2000_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\taylor_et_al\references.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>research_question.txt</name>
+        <path>data\taylor_et_al\research_question.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Silumbe 2015_full.md</name>
+        <path>data\taylor_et_al\Silumbe 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Silumbwe 2019.pdf</name>
+        <path>data\taylor_et_al\Silumbwe 2019.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Silumbwe 2019_full.md</name>
+        <path>data\taylor_et_al\Silumbwe 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>successful_scrapes.json</name>
+        <path>data\taylor_et_al\successful_scrapes.json</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Wodnik 2020_full.md</name>
+        <path>data\taylor_et_al\Wodnik 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Wynd 2007.pdf</name>
+        <path>data\taylor_et_al\Wynd 2007.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+        </directory>
+            <directory name="scraped_references">
+            </directory>
+                <directory name="Adekeye 2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Adekeye 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Ahorlu 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Ahorlu 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Amarillo 2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Amarillo 2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2003">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2003\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2004a">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2004a\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2004b">
+                </directory>
+                <directory name="Babu 2004c">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2004c\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2010">
+                </directory>
+                <directory name="Baker 2007">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Baker 2007\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Banarjee 2019">
+                </directory>
+                <directory name="Bhullar 2010">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Bhullar 2010\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Biritwum 2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Biritwum 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Bogus 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Bogus 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Cabral 2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Cabral 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Cassidy 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Cassidy 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Da-Costa Vroom 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Da-Costa Vroom 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Das 2005">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Das 2005\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Derua 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Derua 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Gonzales 2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Gonzales 2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Hussain 2014">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Hussain 2014\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Karki 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Karki 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="King 2011">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\King 2011\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kisoka 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kisoka 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kisoka 2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kisoka 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kouassi 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kouassi 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2008">
+                </directory>
+                <directory name="Krentel 2012">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2012\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kusi 2020">
+                </directory>
+                <directory name="Kyelem 2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kyelem 2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Malecela 2009">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Malecela 2009\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Manyeh 2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Manyeh 2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Manyeh 2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Manyeh 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Manyeh 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Manyeh 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Mwakitalu 2013">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Mwakitalu 2013\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njomo 2012a">
+                </directory>
+                <directory name="Njomo 2012b">
+                </directory>
+                <directory name="Njomo 2012c">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Njomo 2012c\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njomo 2014">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Njomo 2014\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njomo 2020a">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Njomo 2020a\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njomo 2020b">
+                </directory>
+                <directory name="Nuwaha 2004">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Nuwaha 2004\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Parker 2013">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Parker 2013\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Parker 2013a">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Parker 2013a\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Ramaiah 2000">
+                </directory>
+                <directory name="Ramaiah 2005">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Ramaiah 2005\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Silumbe 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Silumbe 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Silumbwe 2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Silumbwe 2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Widjanarko 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Widjanarko 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Wodnik 2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Wodnik 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Wynd 2007">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Wynd 2007\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+    <directory name="paper_prepper">
+    <file>
+        <name>bibtex.py</name>
+        <path>paper_prepper\bibtex.py</path>
+        <content>
+# academic_claim_analyzer/search/bibtex.py
+
+import requests
+from typing import Optional
+
+def get_bibtex_from_doi(doi: str) -> Optional[str]:
+    """
+    Fetch BibTeX data for a given DOI using the Crossref API.
+    """
+    url = f"https://api.crossref.org/works/{doi}/transform/application/x-bibtex"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
+    return None
+
+def get_bibtex_from_title(title: str, authors: list, year: int) -> Optional[str]:
+    """
+    Search for a paper using its title, authors, and year, then fetch its BibTeX data using the Crossref API.
+    """
+    query = f"{title} {' '.join(authors)} {year}"
+    url = f"https://api.crossref.org/works?query={query}&rows=1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data['message']['items']:
+            doi = data['message']['items'][0].get('DOI')
+            if doi:
+                return get_bibtex_from_doi(doi)
+    return None
+
+# Test with main code
+def main():
+    # Example 1: Get BibTeX from DOI
+    doi = "10.1016/j.ifacol.2020.12.237"
+    bibtex_from_doi = get_bibtex_from_doi(doi)
+    print("BibTeX from DOI:")
+    print(bibtex_from_doi)
+    print("\n")
+
+    # Example 2: Get BibTeX from title, authors, and year
+    title = "Optimal control of greenhouse climate using PID and MPC algorithms"
+    authors = ["Hasni", "A.", "Taibi", "R.", "Draoui", "B.", "Boulard", "T."]
+    year = 2020
+    bibtex_from_title = get_bibtex_from_title(title, authors, year)
+    print("BibTeX from title, authors, and year:")
+    print(bibtex_from_title)
+
+if __name__ == "__main__":
+    main()
+        </content>
+    </file>
+    <file>
+        <name>bibtex_to_apa.py</name>
+        <path>paper_prepper\bibtex_to_apa.py</path>
+        <content>
+import bibtexparser
+import re
+import os
+from unidecode import unidecode
+
+def clean_text(text):
+    text = unidecode(text)
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[\{\}]', '', text)
+    return text.strip()
+
+def format_authors(authors, max_authors=7):
+    author_list = [a.strip() for a in re.split(r'\s+and\s+', authors)]
+    formatted_authors = []
+    for author in author_list:
+        names = author.split(',')
+        if len(names) == 2:
+            last_name = names[0].strip()
+            first_names = names[1].strip()
+            initials = ''.join(name[0].upper() + '.' for name in first_names.split() if name)
+            formatted_authors.append(f"{last_name}, {initials}")
+        else:
+            formatted_authors.append(author)
+    
+    if len(formatted_authors) > max_authors:
+        return ', '.join(formatted_authors[:6]) + ', et al.'
+    elif len(formatted_authors) > 1:
+        return ', '.join(formatted_authors[:-1]) + ', & ' + formatted_authors[-1]
+    else:
+        return formatted_authors[0]
+
+def format_title(title):
+    title = clean_text(title)
+    return title[0].upper() + title[1:].lower()
+
+def format_journal(journal):
+    journal = clean_text(journal)
+    return ' '.join(word.capitalize() for word in journal.split())
+
+def format_pages(pages):
+    return pages.replace('--', '-')
+
+def format_doi(doi):
+    return f"https://doi.org/{doi}" if doi else ''
+
+def get_sort_key(entry):
+    authors = entry.get('author', '')
+    if not authors:
+        return ('', entry.get('year', '9999'), entry.get('title', ''))
+    first_author = authors.split(' and ')[0]
+    last_name = first_author.split(',')[0] if ',' in first_author else first_author.split()[-1]
+    return (last_name.lower(), entry.get('year', ''), entry.get('title', ''))
+
+def convert_to_apa(input_file, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    base_name = os.path.splitext(os.path.basename(input_file))[0]
+    output_file = os.path.join(output_dir, f"{base_name}_apa.txt")
+
+    with open(input_file, 'r', encoding='utf-8') as bibtex_file:
+        parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+        bib_database = bibtexparser.load(bibtex_file, parser=parser)
+
+    sorted_entries = sorted(bib_database.entries, key=get_sort_key)
+
+    with open(output_file, 'w', encoding='utf-8') as apa_file:
+        for entry in sorted_entries:
+            authors = format_authors(clean_text(entry.get('author', '')))
+            year = entry.get('year', 'n.d.')
+            title = format_title(entry.get('title', ''))
+            journal = format_journal(entry.get('journal', entry.get('booktitle', '')))
+            volume = entry.get('volume', '')
+            number = entry.get('number', '')
+            pages = format_pages(entry.get('pages', ''))
+            doi = format_doi(entry.get('doi', ''))
+
+            if not authors:
+                authors = "Unknown Author"
+
+            citation = f"{authors} ({year}). {title}. "
+            
+            if journal:
+                citation += f"{journal}"
+                if volume:
+                    citation += f", {volume}"
+                    if number:
+                        citation += f"({number})"
+                if pages:
+                    citation += f", {pages}"
+            citation += "."
+            
+            if doi:
+                citation += f" {doi}"
+            
+            apa_file.write(citation + "\n")
+
+    print(f"APA citations have been written to {output_file}")
+
+if __name__ == "__main__":
+    input_file = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10\My Library.bib"
+    output_dir = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10"
+    convert_to_apa(input_file, output_dir)
+        </content>
+    </file>
+    <file>
+        <name>bibtex_to_json.py</name>
+        <path>paper_prepper\bibtex_to_json.py</path>
+        <content>
+# paper_prepper/bibtex_to_json.py
+
+import os
+import json
+import bibtexparser
+from typing import Dict, Any
+from utils.file_utils import read_file, write_file
+
+# Global variables
+INPUT_BIB = os.path.join('data', 'iot_ml_review', 'My Library.bib')
+OUTPUT_DIR = os.path.join('data', 'iot_ml_review')
+
+def clean_text(text: str) -> str:
+    return text.strip().replace('{', '').replace('}', '')
+
+def extract_links(entry: Dict[str, Any]) -> list:
+    links = []
+    if 'doi' in entry:
+        links.append(f"https://doi.org/{entry['doi']}")
+    if 'url' in entry:
+        links.append(entry['url'])
+    return links
+
+def bibtex_to_json(bibtex_str: str) -> Dict[str, Any]:
+    parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+    bib_database = bibtexparser.loads(bibtex_str, parser)
+    
+    result = {}
+    for entry in bib_database.entries:
+        key = entry['ID']
+        result[key] = {
+            "title": clean_text(entry.get('title', '')),
+            "links": extract_links(entry),
+            "bibtex_data": entry  # Preserve all BibTeX data
+        }
+    
+    return result
+
+def process_bibtex_file():
+    try:
+        bibtex_content = read_file(INPUT_BIB)
+        json_data = bibtex_to_json(bibtex_content)
+        
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        output_file = os.path.join(OUTPUT_DIR, 'references.json')
+        
+        json_content = json.dumps(json_data, indent=2, ensure_ascii=False)
+        write_file(output_file, json_content)
+        
+        print(f"Successfully converted BibTeX to JSON. Output saved to {output_file}")
+    except FileNotFoundError:
+        print(f"Error: Input file {INPUT_BIB} not found.")
+    except json.JSONDecodeError:
+        print("Error: Failed to encode data to JSON.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+
+if __name__ == "__main__":
+    process_bibtex_file()
+        </content>
+    </file>
+    <file>
+        <name>create_manual_entry_files.py</name>
+        <path>paper_prepper\create_manual_entry_files.py</path>
+        <content>
+# paper_prepper/create_manual_entry_files.py
+
+import os
+import json
+from utils.file_utils import read_file, write_file
+
+def create_manual_entry_files(data_dir, source_paper_name):
+    source_paper_dir = os.path.join(data_dir, source_paper_name)
+    failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
+    references_json = os.path.join(source_paper_dir, "references.json")
+    
+    if not os.path.exists(failed_scrapes_json):
+        print(f"No failed_scrapes.json found in {source_paper_dir}")
+        return
+    
+    if not os.path.exists(references_json):
+        print(f"No references.json found in {source_paper_dir}")
+        return
+    
+    failed_scrapes = json.loads(read_file(failed_scrapes_json))
+    all_references = json.loads(read_file(references_json))
+    
+    manual_entry_dir = os.path.join(source_paper_dir, "manual_entry")
+    os.makedirs(manual_entry_dir, exist_ok=True)
+    
+    for ref_name, ref_data in failed_scrapes.items():
+        file_name = f"{ref_name}_manual.txt"
+        file_path = os.path.join(manual_entry_dir, file_name)
+        
+        title = all_references.get(ref_name, {}).get('title', 'Title not available')
+        
+        content = f"Reference: {ref_name}\n"
+        content += f"Title: {title}\n"
+        content += "Original links:\n"
+        for link in ref_data['links']:
+            content += f"- {link}\n"
+        content += "\nPlease enter the reference content below this line:\n"
+        content += "=" * 50 + "\n"
+        
+        write_file(file_path, content)
+        print(f"Created manual entry file: {file_path}")
+    
+    print(f"\nCreated {len(failed_scrapes)} files for manual entry in {manual_entry_dir}")
+    print("Please manually add the reference content to these files.")
+
+if __name__ == "__main__":
+    data_dir = "data"  # Adjust this if your data directory is located elsewhere
+    source_paper_name = input("Enter the name of the source paper directory: ")
+    create_manual_entry_files(data_dir, source_paper_name)
+        </content>
+    </file>
+    <file>
+        <name>reference_processor.py</name>
+        <path>paper_prepper\reference_processor.py</path>
+        <content>
+# paper_prepper/reference_processor.py
+
+import os
+import json
+import shutil
+import logging
+from scraper import UnifiedWebScraper
+import asyncio
+import aiohttp
+from utils.file_utils import read_file, write_file
+
+class ReferenceProcessor:
+    def __init__(self, data_dir):
+        self.data_dir = data_dir
+        self.logger = logging.getLogger(__name__)
+
+    async def process_references(self, source_paper_name):
+        source_paper_dir = os.path.join(self.data_dir, source_paper_name)
+        original_json_file = os.path.join(source_paper_dir, "references.json")
+        successful_scrapes_json = os.path.join(source_paper_dir, "successful_scrapes.json")
+        failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
+
+        if not os.path.exists(original_json_file):
+            raise FileNotFoundError(f"references.json not found in {source_paper_dir}")
+
+        # Load original references
+        references = json.loads(read_file(original_json_file))
+
+        # Load successful scrapes
+        successful_scrapes = self.load_json(successful_scrapes_json, {})
+
+        # Check if failed_scrapes.json exists
+        if os.path.exists(failed_scrapes_json):
+            failed_scrapes = json.loads(read_file(failed_scrapes_json))
+            references_to_process = {k: v for k, v in references.items() if k in failed_scrapes}
+            self.logger.info("Processing only failed scrapes from previous run.")
+        else:
+            failed_scrapes = {}
+            references_to_process = references
+            self.logger.info("Processing all references.")
+
+        scraped_dir = os.path.join(source_paper_dir, "scraped_references")
+        os.makedirs(scraped_dir, exist_ok=True)
+
+        async with aiohttp.ClientSession() as session:
+            scraper = UnifiedWebScraper(session=session)
+            await scraper.initialize()
+
+            for ref_name, ref_data in list(references_to_process.items()):
+                ref_dir = os.path.join(scraped_dir, ref_name)
+                os.makedirs(ref_dir, exist_ok=True)
+
+                successful_scrape = False
+                for i, link in enumerate(ref_data["links"]):
+                    try:
+                        content = await scraper.scrape(link)
+                        if content:
+                            write_file(os.path.join(ref_dir, f"link_{i+1}.md"), content)
+                            successful_scrape = True
+                    except Exception as e:
+                        self.logger.error(f"Error scraping link {link} for reference {ref_name}: {str(e)}")
+
+                if successful_scrape:
+                    md_files = [f for f in os.listdir(ref_dir) if f.endswith('.md')]
+                    if md_files:
+                        largest_file = max(
+                            (os.path.join(ref_dir, f) for f in md_files),
+                            key=os.path.getsize
+                        )
+                        target_file = os.path.join(source_paper_dir, f"{ref_name}_full.md")
+                        shutil.move(largest_file, target_file)
+                        
+                        if os.path.getsize(target_file) < 60 * 1024:
+                            os.remove(target_file)
+                            self.logger.warning(f"Scraped content for {ref_name} is less than 60KB")
+                            failed_scrapes[ref_name] = {"reason": "Content less than 60KB", "links": ref_data["links"]}
+                        else:
+                            self.logger.info(f"Successfully processed reference {ref_name}")
+                            successful_scrapes[ref_name] = {"file": f"{ref_name}_full.md", "size": os.path.getsize(target_file)}
+                            if ref_name in failed_scrapes:
+                                del failed_scrapes[ref_name]
+                    else:
+                        self.logger.warning(f"No markdown files found for reference {ref_name}")
+                        failed_scrapes[ref_name] = {"reason": "No markdown files created", "links": ref_data["links"]}
+                else:
+                    self.logger.warning(f"Failed to scrape any content for reference {ref_name}")
+                    failed_scrapes[ref_name] = {"reason": "Failed to scrape any content", "links": ref_data["links"]}
+
+            await scraper.close()
+
+        # Write updated successful and failed scrapes
+        write_file(successful_scrapes_json, json.dumps(successful_scrapes, indent=2))
+        if failed_scrapes:
+            write_file(failed_scrapes_json, json.dumps(failed_scrapes, indent=2))
+        elif os.path.exists(failed_scrapes_json):
+            os.remove(failed_scrapes_json)
+            self.logger.info("All failed scrapes have been successfully processed. Removed failed_scrapes.json.")
+
+        self.logger.info(f"Finished processing references for {source_paper_name}")
+        self.logger.info(f"Successful scrapes have been written to: {successful_scrapes_json}")
+        if failed_scrapes:
+            self.logger.info(f"Failed scrapes have been written to: {failed_scrapes_json}")
+
+        # Check if all references have been processed
+        all_processed = set(successful_scrapes.keys()).union(set(failed_scrapes.keys()))
+        if all_processed == set(references.keys()):
+            self.logger.info("All references have been processed. No further processing needed.")
+            return False  # Indicate that no further processing is needed
+        else:
+            remaining = set(references.keys()) - all_processed
+            self.logger.info(f"{len(remaining)} references still need processing.")
+            return True  # Indicate that further processing is needed
+
+    @staticmethod
+    def load_json(file_path, default):
+        if os.path.exists(file_path):
+            return json.loads(read_file(file_path))
+        return default
+
+async def main():
+    processor = ReferenceProcessor("data")
+    
+    source_paper_name = input("Enter the name of the source paper directory: ")
+
+    try:
+        needs_further_processing = await processor.process_references(source_paper_name)
+        if not needs_further_processing:
+            print("All references have been processed. The script will now exit.")
+        else:
+            print("Some references still need processing. You can run the script again to continue.")
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+    print("\nProcessing complete.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+        </content>
+    </file>
+    <file>
+        <name>sample_paper_analyzer.py</name>
+        <path>paper_prepper\sample_paper_analyzer.py</path>
+        <content>
+import asyncio
+import json
+import os
+import logging
+from typing import List, Dict
+from async_llm_handler import Handler
+from bibtex import get_bibtex_from_title
+import time
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Rate limiting settings
+MAX_REQUESTS_PER_MINUTE = 25
+REQUEST_INTERVAL = 60 / MAX_REQUESTS_PER_MINUTE
+
+async def load_text_file(file_path: str) -> str:
+    logger.info(f"Loading text file: {file_path}")
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        logger.debug(f"Successfully loaded {len(content)} characters from {file_path}")
+        return content
+    except Exception as e:
+        logger.error(f"Error loading file {file_path}: {str(e)}")
+        raise
+
+async def analyze_reference(handler: Handler, source_text: str, reference_text: str, reference_file: str) -> Dict:
+    logger.info(f"Analyzing reference: {reference_file}")
+    
+    prompt = f"""
+    Analyze the provided source text and reference text to determine if the reference should be cited. 
+    Return a JSON object with the following structure:
+
+    {{
+        "title": "Paper title",
+        "authors": ["Author 1", "Author 2"],
+        "year": YYYY,
+        "doi": "DOI if available",
+        "analysis": {{
+            "include": 0 or 1,
+            "section": "Section name",
+            "paragraph": "First 5 words of the paragraph",
+            "after_line": "First 5 words of the line",
+            "explanation": "Detailed explanation of why this paper should be included, where it fits in the review, and what point it supports"
+        }},
+        "relevant_quotes": [
+            "Quote 1",
+            "Quote 2",
+            "Quote 3"
+        ],
+        "bibtex": "BibTeX entry"
+    }}
+    
+    Here is what a good acceptance might look like:
+    
+        {{
+    "title": "Machine Learning Approaches for IoT Security: A Comprehensive Survey",
+    "authors": ["John Doe", "Jane Smith"],
+    "year": 2022,
+    "doi": "10.1234/example.doi.2022",
+    "analysis": {{
+        "include": 1,
+        "section": "Security Challenges in IoT",
+        "paragraph": "One of the primary concerns",
+        "after_line": "Various security threats in IoT",
+        "explanation": "This paper should be included in the review as it provides a comprehensive survey of machine learning approaches specifically tailored for IoT security. It fits well in the 'Security Challenges in IoT' section, supporting the point that machine learning can be effectively used to address various security threats in IoT systems. The paper's findings on the effectiveness of different ML algorithms for threat detection and prevention would significantly strengthen our argument about the importance of advanced security measures in IoT environments."
+    }},
+    "relevant_quotes": [
+        "Our survey reveals that supervised learning techniques, particularly deep learning models, show promising results in detecting and classifying IoT security threats.",
+        "The study found that ensemble methods combining multiple ML algorithms outperform single-algorithm approaches in IoT intrusion detection systems.",
+        "Despite the advantages, the survey highlights challenges in implementing ML-based security solutions in resource-constrained IoT devices, emphasizing the need for lightweight algorithms."
+    ],
+    "bibtex": "@article{{doe2022machine,\n  title={{Machine Learning Approaches for IoT Security: A Comprehensive Survey}},\n  author={{Doe, John and Smith, Jane}},\n  journal={{Journal of IoT Security}},\n  year={{2022}},\n  publisher={{Example Publisher}}\n}}"
+    }}
+    
+    And here is what a good rejection might look like:
+    
+        {{
+    "title": "Energy-Efficient Machine Learning Algorithms for IoT Devices",
+    "authors": null,
+    "year": null,
+    "doi": null,
+    "analysis": {{
+        "include": 0,
+        "section": "IoT and Machine Learning Integration",
+        "paragraph": "Challenges in implementing ML on",
+        "after_line": "Resource constraints of IoT devices",
+        "explanation": "While this paper presents interesting research on energy-efficient machine learning algorithms for IoT devices, it doesn't quite meet the threshold for inclusion in our review. The paper addresses an important aspect of IoT and ML integration - the energy efficiency of ML algorithms on resource-constrained devices. However, our review already covers this topic sufficiently in the 'Challenges in implementing ML on IoT devices' subsection. 
+
+        The paper's main contributions - a new lightweight neural network architecture and an energy-aware training method - are noteworthy, but they don't provide a significant enough advancement or novel perspective to warrant inclusion in our already comprehensive review. The energy savings reported (15-20%) are modest and in line with what we've already discussed from other sources.
+
+        Furthermore, the paper's focus is quite narrow, dealing specifically with energy efficiency in ML algorithms, while our review aims to provide a broader overview of IoT and ML integration challenges and solutions. Including this paper might skew the balance of our review towards energy efficiency at the expense of other equally important aspects.
+
+        In summary, while the paper is of good quality and relevant to our topic, its contributions are not sufficiently novel or impactful to justify expanding our already well-rounded review. It would be more appropriate to reference this work in a more specialized survey focusing specifically on energy efficiency in IoT-based machine learning systems."
+    }},
+    "relevant_quotes": null,
+    "bibtex": null
+    }}
+    
+    It is just as important to reject references as it is to accept them.
+
+    Instructions:
+    1. Be extremely selective about including references. The default decision should be to reject unless the reference adds substantial, novel information to the source text.
+    2. If you decide not to include the reference (analysis.include = 0), set ALL fields except "title" and "analysis" to null. This includes authors, year, doi, relevant_quotes, and bibtex.
+    3. The analysis field should always be filled, regardless of the inclusion decision.
+    4. If including the reference, provide exactly 3 relevant quotes from the reference text to support its inclusion.
+    5. In the analysis, clearly state the section, paragraph (first 5 words), and line (first 5 words) where the reference should be inserted.
+    6. In the explanation, provide a detailed rationale for including the paper, specifying where it fits in the review and what point it supports.
+
+    Your task is to enhance the source text with only the most pertinent and impactful references. Reject any reference that doesn't significantly strengthen or expand upon the source text's content.
+
+    Source text:
+    {source_text}
+
+    Reference text:
+    {reference_text}
+    """
+
+    try:
+        response = await handler.query(prompt, model="gpt_4o_mini", json_mode=True)
+        result = json.loads(response)
+        logger.debug(f"Successfully analyzed reference: {reference_file}")
+    except Exception as e:
+        logger.error(f"Error analyzing reference {reference_file}: {str(e)}")
+        return None
+
+    if result['analysis']['include'] == 0:
+        logger.info(f"Reference rejected: {reference_file}")
+        result = {
+            "title": result.get('title'),
+            "authors": None,
+            "year": None,
+            "doi": None,
+            "analysis": result['analysis'],
+            "relevant_quotes": None,
+            "bibtex": None
+        }
+    elif result.get('title') and result.get('authors') and result.get('year'):
+        logger.info(f"Reference accepted: {reference_file}")
+        try:
+            result['bibtex'] = get_bibtex_from_title(result['title'], result['authors'], result['year'])
+        except Exception as e:
+            logger.warning(f"Failed to generate BibTeX for {result['title']}: {str(e)}")
+    
+    return result
+
+async def process_references(source_file: str, reference_folder: str, output_file: str):
+    logger.info("Starting reference processing")
+    handler = Handler()
+    
+    try:
+        source_text = await load_text_file(source_file)
+    except Exception as e:
+        logger.error(f"Failed to load source text. Aborting process. Error: {str(e)}")
+        return
+
+    reference_files = [f for f in os.listdir(reference_folder) if f.endswith('.txt')]
+    logger.info(f"Found {len(reference_files)} reference files to process")
+
+    results = []
+    for ref_file in reference_files:
+        ref_path = os.path.join(reference_folder, ref_file)
+        try:
+            ref_text = await load_text_file(ref_path)
+            result = await analyze_reference(handler, source_text, ref_text, ref_file)
+            if result is not None:
+                results.append(result)
+            await asyncio.sleep(REQUEST_INTERVAL)  # Rate limiting
+        except Exception as e:
+            logger.error(f"Error processing reference file {ref_file}: {str(e)}")
+
+    accepted_results = [result for result in results if result['analysis']['include'] == 1]
+    logger.info(f"Accepted {len(accepted_results)} out of {len(results)} references")
+
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(accepted_results, f, indent=2, ensure_ascii=False)
+        logger.info(f"Results written to {output_file}")
+    except Exception as e:
+        logger.error(f"Error writing results to {output_file}: {str(e)}")
+
+if __name__ == "__main__":
+    source_file = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft7\full_papers\source_text.txt.txt"
+    reference_folder = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft7\full_papers"
+    output_file = os.path.join(reference_folder, "citation_analysis.json")
+
+    logger.info("Citation analyzer started")
+    asyncio.run(process_references(source_file, reference_folder, output_file))
+    logger.info("Citation analyzer finished")
+        </content>
+    </file>
+    <file>
+        <name>scraper.py</name>
+        <path>paper_prepper\scraper.py</path>
+        <content>
+import os
+import re
+import asyncio
+import random
+import aiohttp
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from fake_useragent import UserAgent
+import logging
+import sys
+import json
+import fitz  # PyMuPDF
+from bs4 import BeautifulSoup
+import requests
+from urllib.parse import urlparse
+from markdownify import markdownify as md
+
+class UnifiedWebScraper:
+    def __init__(self, session, max_concurrent_tasks=5):
+        self.semaphore = asyncio.Semaphore(max_concurrent_tasks)
+        self.user_agent = UserAgent()
+        self.browser = None
+        self.session = session
+        self.logger = logging.getLogger(__name__)
+
+    async def initialize(self):
+        try:
+            playwright = await async_playwright().start()
+            self.browser = await playwright.chromium.launch(headless=True)
+            self.logger.info("Browser initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize browser: {str(e)}")
+            raise
+
+    async def close(self):
+        if self.browser:
+            await self.browser.close()
+            self.logger.info("Browser closed")
+
+    def normalize_url(self, url):
+        if url.startswith("10.") or url.startswith("doi:"):
+            return f"https://doi.org/{url.replace('doi:', '')}"
+        parsed = urlparse(url)
+        if not parsed.scheme:
+            return f"http://{url}"
+        return url
+
+    async def scrape(self, url, min_words=700, max_retries=3):
+        normalized_url = self.normalize_url(url)
+        self.logger.info(f"Attempting to scrape URL: {normalized_url}")
+
+        scraping_methods = [
+            self.scrape_with_requests,
+            self.scrape_with_playwright
+        ]
+
+        if normalized_url.lower().endswith('.pdf'):
+            scraping_methods.append(self.scrape_pdf)
+
+        best_result = ("", 0)
+        for method in scraping_methods:
+            self.logger.info(f"Trying method: {method.__name__}")
+            for attempt in range(max_retries):
+                try:
+                    self.logger.info(f"Attempt {attempt + 1} with {method.__name__}")
+                    content = await method(normalized_url)
+                    word_count = len(content.split())
+                    self.logger.info(f"Got {word_count} words from {method.__name__}")
+                    if word_count > best_result[1]:
+                        best_result = (content, word_count)
+                    if word_count >= min_words:
+                        self.logger.info(f"Successfully scraped URL: {normalized_url}")
+                        return content
+                except Exception as e:
+                    self.logger.error(f"Error in {method.__name__} (attempt {attempt + 1}): {str(e)}")
+                if attempt < max_retries - 1:
+                    wait_time = random.uniform(1, 3)
+                    self.logger.info(f"Waiting {wait_time:.2f} seconds before next attempt")
+                    await asyncio.sleep(wait_time)
+
+        self.logger.warning(f"Failed to meet minimum word count for URL: {normalized_url}")
+        return best_result[0]
+
+    async def scrape_with_requests(self, url):
+        self.logger.info(f"Scraping with requests: {url}")
+        response = requests.get(url, headers={"User-Agent": self.user_agent.random})
+        if response.status_code == 200:
+            return md(response.text)
+        return ""
+
+    async def scrape_with_playwright(self, url):
+        self.logger.info(f"Scraping with Playwright: {url}")
+        if not self.browser:
+            await self.initialize()
+        context = await self.browser.new_context(
+            user_agent=self.user_agent.random,
+            viewport={"width": 1920, "height": 1080},
+            ignore_https_errors=True,
+        )
+        page = await context.new_page()
+        try:
+            await page.goto(url, wait_until="networkidle", timeout=15000)
+            content = await page.content()
+            return md(content)
+        except PlaywrightTimeoutError:
+            self.logger.warning(f"Timeout occurred while loading {url}")
+            return ""
+        finally:
+            await page.close()
+
+    async def scrape_pdf(self, url):
+        self.logger.info(f"Scraping PDF: {url}")
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                pdf_bytes = await response.read()
+                return self.extract_text_from_pdf(pdf_bytes)
+        return ""
+
+    def extract_text_from_pdf(self, pdf_bytes):
+        try:
+            document = fitz.open("pdf", pdf_bytes)
+            text = ""
+            for page in document:
+                text += page.get_text()
+            return text.strip()
+        except Exception as e:
+            self.logger.error(f"Failed to extract text from PDF. Error: {str(e)}")
+            return ""
+
+def sanitize_filename(url):
+    # Remove the protocol and www. if present
+    url = re.sub(r'^https?://(www\.)?', '', url)
+    # Replace non-alphanumeric characters with underscores
+    filename = re.sub(r'[^\w\-_\.]', '_', url)
+    # Truncate if too long (max 255 characters for most file systems)
+    return filename[:255] + '.md'
+
+async def main():
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logging.basicConfig(
+        level=logging.INFO,
+        format=log_format,
+        handlers=[
+            logging.FileHandler("scraper.log"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+
+    output_folder = r"C:\Users\bnsoh2\Desktop\test"
+    os.makedirs(output_folder, exist_ok=True)
+
+    async with aiohttp.ClientSession() as session:
+        scraper = UnifiedWebScraper(session=session)
+        try:
+            await scraper.initialize()
+        except Exception as e:
+            logging.error(f"Initialization failed: {e}")
+            return
+
+        urls = [
+            "10.1016/j.ifacol.2020.12.237",
+            "10.1016/j.agwat.2023.108536",
+            "10.1016/j.atech.2023.100251",
+            "10.1016/j.atech.2023.100179",
+            "10.1016/j.ifacol.2023.10.677",
+            "10.1016/j.ifacol.2023.10.1655",
+            "10.1016/j.ifacol.2023.10.667",
+            "10.1002/cjce.24764",
+            "10.3390/app13084734",
+            "10.1016/j.atech.2022.100074",
+            "10.1007/s10668-023-04028-9",
+            "10.1109/IJCNN54540.2023.10191862",
+            "10.1201/9780429290152-5",
+            "10.1016/j.jprocont.2022.10.003",
+            "10.1016/j.rser.2022.112790",
+            "10.1007/s11269-022-03191-4",
+            "10.3390/app12094235",
+            "10.3390/w14060889",
+            "10.3390/su14031304",
+        ]
+
+        success_count = 0
+        failure_count = 0
+
+        for url in urls:
+            try:
+                content = await scraper.scrape(url)
+                word_count = len(content.split())
+                
+                normalized_url = scraper.normalize_url(url)
+                filename = sanitize_filename(normalized_url)
+                file_path = os.path.join(output_folder, filename)
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                if word_count >= 700:
+                    print(f"\nURL: {url}\nStatus: Success\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
+                    success_count += 1
+                else:
+                    print(f"\nURL: {url}\nStatus: Failure (insufficient words)\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
+                    failure_count += 1
+            
+            except Exception as e:
+                print(f"\nURL: {url}\nStatus: Error\nError message: {str(e)}\n" + "-" * 80)
+                failure_count += 1
+
+        print("\nSummary:\n" + "=" * 80)
+        print(f"Total URLs scraped: {len(urls)}")
+        print(f"Successful scrapes: {success_count}")
+        print(f"Failed scrapes: {failure_count}")
+        print(f"Results saved in: {output_folder}")
+
+        await scraper.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+        </content>
+    </file>
+    <file>
+        <name>test_pdf_download.py</name>
+        <path>paper_prepper\test_pdf_download.py</path>
+        <content>
+import requests
+import os
+
+def download_pdf(url, output_path):
+    # Send a GET request to the URL
+    response = requests.get(url)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Get the content type from the headers
+        content_type = response.headers.get('Content-Type', '').lower()
+        
+        # Check if the content is a PDF
+        if 'application/pdf' in content_type:
+            # Write the content to a file
+            with open(output_path, 'wb') as f:
+                f.write(response.content)
+            print(f"PDF downloaded successfully: {output_path}")
+        else:
+            print("The URL does not point to a PDF file.")
+    else:
+        print(f"Failed to download. Status code: {response.status_code}")
+
+# Example usage
+url = "https://www.jstage.jst.go.jp/article/jnsv/66/Supplement/66_S18/_pdf"
+output_path = os.path.join(os.getcwd(), "downloaded_paper.pdf")
+
+download_pdf(url, output_path)
+        </content>
+    </file>
+    </directory>
+        <directory name="utils">
+    <file>
+        <name>file_utils.py</name>
+        <path>paper_prepper\utils\file_utils.py</path>
+        <content>
+# paper_prepper/utils/file_utils.py
+
+import chardet
+from typing import List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+def detect_encoding(file_path: str, fallback_encodings: List[str] = ['utf-8', 'iso-8859-1', 'windows-1252']) -> str:
+    """
+    Detect the encoding of a file using chardet, with fallback options.
+    
+    Args:
+    file_path (str): Path to the file
+    fallback_encodings (List[str]): List of encodings to try if chardet fails
+
+    Returns:
+    str: Detected encoding
+    """
+    # First, try to detect the encoding using chardet
+    with open(file_path, 'rb') as file:
+        raw_data = file.read()
+    detected = chardet.detect(raw_data)
+    if detected['encoding'] and detected['confidence'] > 0.7:
+        logger.info(f"Detected encoding for {file_path}: {detected['encoding']} (confidence: {detected['confidence']})")
+        return detected['encoding']
+
+    # If chardet fails or has low confidence, try fallback encodings
+    for encoding in fallback_encodings:
+        try:
+            with open(file_path, 'r', encoding=encoding) as file:
+                file.read()
+            logger.info(f"Successfully read {file_path} with fallback encoding: {encoding}")
+            return encoding
+        except UnicodeDecodeError:
+            continue
+
+    # If all attempts fail, raise an exception
+    raise ValueError(f"Unable to determine encoding for {file_path}")
+
+def read_file(file_path: str) -> str:
+    """
+    Read a file using the detected encoding.
+
+    Args:
+    file_path (str): Path to the file
+
+    Returns:
+    str: Contents of the file
+    """
+    encoding = detect_encoding(file_path)
+    with open(file_path, 'r', encoding=encoding) as file:
+        return file.read()
+
+def write_file(file_path: str, content: str, encoding: Optional[str] = None) -> None:
+    """
+    Write content to a file using the specified or detected encoding.
+
+    Args:
+    file_path (str): Path to the file
+    content (str): Content to write
+    encoding (Optional[str]): Encoding to use, if None, UTF-8 will be used
+    """
+    encoding = encoding or 'utf-8'
+    with open(file_path, 'w', encoding=encoding) as file:
+        file.write(content)
+    logger.info(f"Successfully wrote to {file_path} using encoding: {encoding}")
+        </content>
+    </file>
+        </directory>
+</repository_structure>
