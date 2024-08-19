@@ -4,7 +4,7 @@ import os
 import logging
 from typing import List, Dict
 from async_llm_handler import Handler
-from bibtex import get_bibtex_from_title
+from utils.bibtex_utils import get_bibtex_from_title
 import time
 
 # Set up logging

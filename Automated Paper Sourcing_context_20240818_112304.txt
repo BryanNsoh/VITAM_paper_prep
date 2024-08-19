@@ -1,4 +1,4 @@
-Context extraction timestamp: 20240818_110053
+Context extraction timestamp: 20240818_112304
 
 <repository_structure>
 <directory name="Automated Paper Sourcing">
@@ -16,6 +16,53 @@ Context extraction timestamp: 20240818_110053
         <name>downloaded_paper.pdf</name>
         <path>downloaded_paper.pdf</path>
         <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>main.py</name>
+        <path>main.py</path>
+        <content>
+# main.py
+
+import os
+import logging
+from paper_prepper.prepare_references import prepare_references
+from paper_prepper.scrape_papers import scrape_papers
+from paper_prepper.process_failed_scrapes import process_failed_scrapes
+from paper_prepper.analyze_papers import analyze_papers
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+def main():
+    logger.info("Starting Automated Paper Sourcing")
+
+    # Get user input for the data directory to process
+    data_dir = input("Enter the name of the data directory to process: ")
+    full_data_dir = os.path.join('data', data_dir)
+
+    if not os.path.exists(full_data_dir):
+        logger.error(f"Data directory {full_data_dir} does not exist.")
+        return
+
+    # Step 1: Prepare references
+    input_file = os.path.join(full_data_dir, 'My Library.bib')
+    output_file = os.path.join(full_data_dir, 'references.json')
+    prepare_references(input_file, output_file)
+
+    # Step 2: Scrape papers
+    scrape_papers(output_file, full_data_dir)
+
+    # Step 3: Process failed scrapes
+    process_failed_scrapes(full_data_dir)
+
+    # Step 4: Analyze papers
+    analyze_papers(full_data_dir)
+
+    logger.info("Automated Paper Sourcing completed successfully")
+
+if __name__ == "__main__":
+    main()
+        </content>
     </file>
     <file>
         <name>README.md</name>
@@ -177,21 +224,6 @@ setup(
     },
 )
         </content>
-    </file>
-    <file>
-        <name>VITAM_paper_prep_context_20240804_102018.txt</name>
-        <path>VITAM_paper_prep_context_20240804_102018.txt</path>
-        <content>Full content not provided</content>
-    </file>
-    <file>
-        <name>VITAM_paper_prep_context_20240804_105523.txt</name>
-        <path>VITAM_paper_prep_context_20240804_105523.txt</path>
-        <content>Full content not provided</content>
-    </file>
-    <file>
-        <name>VITAM_paper_prep_context_20240815_163317.txt</name>
-        <path>VITAM_paper_prep_context_20240815_163317.txt</path>
-        <content>Full content not provided</content>
     </file>
 </directory>
     <directory name="data">
@@ -3136,435 +3168,8 @@ setup(
                 </directory>
     <directory name="paper_prepper">
     <file>
-        <name>bibtex.py</name>
-        <path>paper_prepper\bibtex.py</path>
-        <content>
-# academic_claim_analyzer/search/bibtex.py
-
-import requests
-from typing import Optional
-
-def get_bibtex_from_doi(doi: str) -> Optional[str]:
-    """
-    Fetch BibTeX data for a given DOI using the Crossref API.
-    """
-    url = f"https://api.crossref.org/works/{doi}/transform/application/x-bibtex"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
-    return None
-
-def get_bibtex_from_title(title: str, authors: list, year: int) -> Optional[str]:
-    """
-    Search for a paper using its title, authors, and year, then fetch its BibTeX data using the Crossref API.
-    """
-    query = f"{title} {' '.join(authors)} {year}"
-    url = f"https://api.crossref.org/works?query={query}&rows=1"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        if data['message']['items']:
-            doi = data['message']['items'][0].get('DOI')
-            if doi:
-                return get_bibtex_from_doi(doi)
-    return None
-
-# Test with main code
-def main():
-    # Example 1: Get BibTeX from DOI
-    doi = "10.1016/j.ifacol.2020.12.237"
-    bibtex_from_doi = get_bibtex_from_doi(doi)
-    print("BibTeX from DOI:")
-    print(bibtex_from_doi)
-    print("\n")
-
-    # Example 2: Get BibTeX from title, authors, and year
-    title = "Optimal control of greenhouse climate using PID and MPC algorithms"
-    authors = ["Hasni", "A.", "Taibi", "R.", "Draoui", "B.", "Boulard", "T."]
-    year = 2020
-    bibtex_from_title = get_bibtex_from_title(title, authors, year)
-    print("BibTeX from title, authors, and year:")
-    print(bibtex_from_title)
-
-if __name__ == "__main__":
-    main()
-        </content>
-    </file>
-    <file>
-        <name>bibtex_to_apa.py</name>
-        <path>paper_prepper\bibtex_to_apa.py</path>
-        <content>
-import bibtexparser
-import re
-import os
-from unidecode import unidecode
-
-def clean_text(text):
-    text = unidecode(text)
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'[\{\}]', '', text)
-    return text.strip()
-
-def format_authors(authors, max_authors=7):
-    author_list = [a.strip() for a in re.split(r'\s+and\s+', authors)]
-    formatted_authors = []
-    for author in author_list:
-        names = author.split(',')
-        if len(names) == 2:
-            last_name = names[0].strip()
-            first_names = names[1].strip()
-            initials = ''.join(name[0].upper() + '.' for name in first_names.split() if name)
-            formatted_authors.append(f"{last_name}, {initials}")
-        else:
-            formatted_authors.append(author)
-    
-    if len(formatted_authors) > max_authors:
-        return ', '.join(formatted_authors[:6]) + ', et al.'
-    elif len(formatted_authors) > 1:
-        return ', '.join(formatted_authors[:-1]) + ', & ' + formatted_authors[-1]
-    else:
-        return formatted_authors[0]
-
-def format_title(title):
-    title = clean_text(title)
-    return title[0].upper() + title[1:].lower()
-
-def format_journal(journal):
-    journal = clean_text(journal)
-    return ' '.join(word.capitalize() for word in journal.split())
-
-def format_pages(pages):
-    return pages.replace('--', '-')
-
-def format_doi(doi):
-    return f"https://doi.org/{doi}" if doi else ''
-
-def get_sort_key(entry):
-    authors = entry.get('author', '')
-    if not authors:
-        return ('', entry.get('year', '9999'), entry.get('title', ''))
-    first_author = authors.split(' and ')[0]
-    last_name = first_author.split(',')[0] if ',' in first_author else first_author.split()[-1]
-    return (last_name.lower(), entry.get('year', ''), entry.get('title', ''))
-
-def convert_to_apa(input_file, output_dir):
-    os.makedirs(output_dir, exist_ok=True)
-    base_name = os.path.splitext(os.path.basename(input_file))[0]
-    output_file = os.path.join(output_dir, f"{base_name}_apa.txt")
-
-    with open(input_file, 'r', encoding='utf-8') as bibtex_file:
-        parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
-        bib_database = bibtexparser.load(bibtex_file, parser=parser)
-
-    sorted_entries = sorted(bib_database.entries, key=get_sort_key)
-
-    with open(output_file, 'w', encoding='utf-8') as apa_file:
-        for entry in sorted_entries:
-            authors = format_authors(clean_text(entry.get('author', '')))
-            year = entry.get('year', 'n.d.')
-            title = format_title(entry.get('title', ''))
-            journal = format_journal(entry.get('journal', entry.get('booktitle', '')))
-            volume = entry.get('volume', '')
-            number = entry.get('number', '')
-            pages = format_pages(entry.get('pages', ''))
-            doi = format_doi(entry.get('doi', ''))
-
-            if not authors:
-                authors = "Unknown Author"
-
-            citation = f"{authors} ({year}). {title}. "
-            
-            if journal:
-                citation += f"{journal}"
-                if volume:
-                    citation += f", {volume}"
-                    if number:
-                        citation += f"({number})"
-                if pages:
-                    citation += f", {pages}"
-            citation += "."
-            
-            if doi:
-                citation += f" {doi}"
-            
-            apa_file.write(citation + "\n")
-
-    print(f"APA citations have been written to {output_file}")
-
-if __name__ == "__main__":
-    input_file = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10\My Library.bib"
-    output_dir = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10"
-    convert_to_apa(input_file, output_dir)
-        </content>
-    </file>
-    <file>
-        <name>bibtex_to_json.py</name>
-        <path>paper_prepper\bibtex_to_json.py</path>
-        <content>
-# paper_prepper/bibtex_to_json.py
-
-import os
-import json
-import bibtexparser
-from typing import Dict, Any
-from utils.file_utils import read_file, write_file
-
-# Global variables
-INPUT_BIB = os.path.join('data', 'iot_ml_review', 'My Library.bib')
-OUTPUT_DIR = os.path.join('data', 'iot_ml_review')
-
-def clean_text(text: str) -> str:
-    return text.strip().replace('{', '').replace('}', '')
-
-def extract_links(entry: Dict[str, Any]) -> list:
-    links = []
-    if 'doi' in entry:
-        links.append(f"https://doi.org/{entry['doi']}")
-    if 'url' in entry:
-        links.append(entry['url'])
-    return links
-
-def bibtex_to_json(bibtex_str: str) -> Dict[str, Any]:
-    parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
-    bib_database = bibtexparser.loads(bibtex_str, parser)
-    
-    result = {}
-    for entry in bib_database.entries:
-        key = entry['ID']
-        result[key] = {
-            "title": clean_text(entry.get('title', '')),
-            "links": extract_links(entry),
-            "bibtex_data": entry  # Preserve all BibTeX data
-        }
-    
-    return result
-
-def process_bibtex_file():
-    try:
-        bibtex_content = read_file(INPUT_BIB)
-        json_data = bibtex_to_json(bibtex_content)
-        
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        output_file = os.path.join(OUTPUT_DIR, 'references.json')
-        
-        json_content = json.dumps(json_data, indent=2, ensure_ascii=False)
-        write_file(output_file, json_content)
-        
-        print(f"Successfully converted BibTeX to JSON. Output saved to {output_file}")
-    except FileNotFoundError:
-        print(f"Error: Input file {INPUT_BIB} not found.")
-    except json.JSONDecodeError:
-        print("Error: Failed to encode data to JSON.")
-    except Exception as e:
-        print(f"An unexpected error occurred: {str(e)}")
-
-if __name__ == "__main__":
-    process_bibtex_file()
-        </content>
-    </file>
-    <file>
-        <name>create_manual_entry_files.py</name>
-        <path>paper_prepper\create_manual_entry_files.py</path>
-        <content>
-# paper_prepper/create_manual_entry_files.py
-
-import os
-import json
-from utils.file_utils import read_file, write_file
-
-def create_manual_entry_files(data_dir, source_paper_name):
-    source_paper_dir = os.path.join(data_dir, source_paper_name)
-    failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
-    references_json = os.path.join(source_paper_dir, "references.json")
-    
-    if not os.path.exists(failed_scrapes_json):
-        print(f"No failed_scrapes.json found in {source_paper_dir}")
-        return
-    
-    if not os.path.exists(references_json):
-        print(f"No references.json found in {source_paper_dir}")
-        return
-    
-    failed_scrapes = json.loads(read_file(failed_scrapes_json))
-    all_references = json.loads(read_file(references_json))
-    
-    manual_entry_dir = os.path.join(source_paper_dir, "manual_entry")
-    os.makedirs(manual_entry_dir, exist_ok=True)
-    
-    for ref_name, ref_data in failed_scrapes.items():
-        file_name = f"{ref_name}_manual.txt"
-        file_path = os.path.join(manual_entry_dir, file_name)
-        
-        title = all_references.get(ref_name, {}).get('title', 'Title not available')
-        
-        content = f"Reference: {ref_name}\n"
-        content += f"Title: {title}\n"
-        content += "Original links:\n"
-        for link in ref_data['links']:
-            content += f"- {link}\n"
-        content += "\nPlease enter the reference content below this line:\n"
-        content += "=" * 50 + "\n"
-        
-        write_file(file_path, content)
-        print(f"Created manual entry file: {file_path}")
-    
-    print(f"\nCreated {len(failed_scrapes)} files for manual entry in {manual_entry_dir}")
-    print("Please manually add the reference content to these files.")
-
-if __name__ == "__main__":
-    data_dir = "data"  # Adjust this if your data directory is located elsewhere
-    source_paper_name = input("Enter the name of the source paper directory: ")
-    create_manual_entry_files(data_dir, source_paper_name)
-        </content>
-    </file>
-    <file>
-        <name>reference_processor.py</name>
-        <path>paper_prepper\reference_processor.py</path>
-        <content>
-# paper_prepper/reference_processor.py
-
-import os
-import json
-import shutil
-import logging
-from scraper import UnifiedWebScraper
-import asyncio
-import aiohttp
-from utils.file_utils import read_file, write_file
-
-class ReferenceProcessor:
-    def __init__(self, data_dir):
-        self.data_dir = data_dir
-        self.logger = logging.getLogger(__name__)
-
-    async def process_references(self, source_paper_name):
-        source_paper_dir = os.path.join(self.data_dir, source_paper_name)
-        original_json_file = os.path.join(source_paper_dir, "references.json")
-        successful_scrapes_json = os.path.join(source_paper_dir, "successful_scrapes.json")
-        failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
-
-        if not os.path.exists(original_json_file):
-            raise FileNotFoundError(f"references.json not found in {source_paper_dir}")
-
-        # Load original references
-        references = json.loads(read_file(original_json_file))
-
-        # Load successful scrapes
-        successful_scrapes = self.load_json(successful_scrapes_json, {})
-
-        # Check if failed_scrapes.json exists
-        if os.path.exists(failed_scrapes_json):
-            failed_scrapes = json.loads(read_file(failed_scrapes_json))
-            references_to_process = {k: v for k, v in references.items() if k in failed_scrapes}
-            self.logger.info("Processing only failed scrapes from previous run.")
-        else:
-            failed_scrapes = {}
-            references_to_process = references
-            self.logger.info("Processing all references.")
-
-        scraped_dir = os.path.join(source_paper_dir, "scraped_references")
-        os.makedirs(scraped_dir, exist_ok=True)
-
-        async with aiohttp.ClientSession() as session:
-            scraper = UnifiedWebScraper(session=session)
-            await scraper.initialize()
-
-            for ref_name, ref_data in list(references_to_process.items()):
-                ref_dir = os.path.join(scraped_dir, ref_name)
-                os.makedirs(ref_dir, exist_ok=True)
-
-                successful_scrape = False
-                for i, link in enumerate(ref_data["links"]):
-                    try:
-                        content = await scraper.scrape(link)
-                        if content:
-                            write_file(os.path.join(ref_dir, f"link_{i+1}.md"), content)
-                            successful_scrape = True
-                    except Exception as e:
-                        self.logger.error(f"Error scraping link {link} for reference {ref_name}: {str(e)}")
-
-                if successful_scrape:
-                    md_files = [f for f in os.listdir(ref_dir) if f.endswith('.md')]
-                    if md_files:
-                        largest_file = max(
-                            (os.path.join(ref_dir, f) for f in md_files),
-                            key=os.path.getsize
-                        )
-                        target_file = os.path.join(source_paper_dir, f"{ref_name}_full.md")
-                        shutil.move(largest_file, target_file)
-                        
-                        if os.path.getsize(target_file) < 60 * 1024:
-                            os.remove(target_file)
-                            self.logger.warning(f"Scraped content for {ref_name} is less than 60KB")
-                            failed_scrapes[ref_name] = {"reason": "Content less than 60KB", "links": ref_data["links"]}
-                        else:
-                            self.logger.info(f"Successfully processed reference {ref_name}")
-                            successful_scrapes[ref_name] = {"file": f"{ref_name}_full.md", "size": os.path.getsize(target_file)}
-                            if ref_name in failed_scrapes:
-                                del failed_scrapes[ref_name]
-                    else:
-                        self.logger.warning(f"No markdown files found for reference {ref_name}")
-                        failed_scrapes[ref_name] = {"reason": "No markdown files created", "links": ref_data["links"]}
-                else:
-                    self.logger.warning(f"Failed to scrape any content for reference {ref_name}")
-                    failed_scrapes[ref_name] = {"reason": "Failed to scrape any content", "links": ref_data["links"]}
-
-            await scraper.close()
-
-        # Write updated successful and failed scrapes
-        write_file(successful_scrapes_json, json.dumps(successful_scrapes, indent=2))
-        if failed_scrapes:
-            write_file(failed_scrapes_json, json.dumps(failed_scrapes, indent=2))
-        elif os.path.exists(failed_scrapes_json):
-            os.remove(failed_scrapes_json)
-            self.logger.info("All failed scrapes have been successfully processed. Removed failed_scrapes.json.")
-
-        self.logger.info(f"Finished processing references for {source_paper_name}")
-        self.logger.info(f"Successful scrapes have been written to: {successful_scrapes_json}")
-        if failed_scrapes:
-            self.logger.info(f"Failed scrapes have been written to: {failed_scrapes_json}")
-
-        # Check if all references have been processed
-        all_processed = set(successful_scrapes.keys()).union(set(failed_scrapes.keys()))
-        if all_processed == set(references.keys()):
-            self.logger.info("All references have been processed. No further processing needed.")
-            return False  # Indicate that no further processing is needed
-        else:
-            remaining = set(references.keys()) - all_processed
-            self.logger.info(f"{len(remaining)} references still need processing.")
-            return True  # Indicate that further processing is needed
-
-    @staticmethod
-    def load_json(file_path, default):
-        if os.path.exists(file_path):
-            return json.loads(read_file(file_path))
-        return default
-
-async def main():
-    processor = ReferenceProcessor("data")
-    
-    source_paper_name = input("Enter the name of the source paper directory: ")
-
-    try:
-        needs_further_processing = await processor.process_references(source_paper_name)
-        if not needs_further_processing:
-            print("All references have been processed. The script will now exit.")
-        else:
-            print("Some references still need processing. You can run the script again to continue.")
-    except FileNotFoundError as e:
-        print(f"Error: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-    print("\nProcessing complete.")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-        </content>
-    </file>
-    <file>
-        <name>sample_paper_analyzer.py</name>
-        <path>paper_prepper\sample_paper_analyzer.py</path>
+        <name>analyze_papers.py</name>
+        <path>paper_prepper\analyze_papers.py</path>
         <content>
 import asyncio
 import json
@@ -3572,7 +3177,7 @@ import os
 import logging
 from typing import List, Dict
 from async_llm_handler import Handler
-from bibtex import get_bibtex_from_title
+from utils.bibtex_utils import get_bibtex_from_title
 import time
 
 # Set up logging
@@ -3760,8 +3365,403 @@ if __name__ == "__main__":
         </content>
     </file>
     <file>
+        <name>prepare_references.py</name>
+        <path>paper_prepper\prepare_references.py</path>
+        <content>
+# paper_prepper/bibtex_to_json.py
+
+import os
+import json
+import bibtexparser
+from typing import Dict, Any
+from utils.file_utils import read_file, write_file
+
+# Global variables
+INPUT_BIB = os.path.join('data', 'iot_ml_review', 'My Library.bib')
+OUTPUT_DIR = os.path.join('data', 'iot_ml_review')
+
+def clean_text(text: str) -> str:
+    return text.strip().replace('{', '').replace('}', '')
+
+def extract_links(entry: Dict[str, Any]) -> list:
+    links = []
+    if 'doi' in entry:
+        links.append(f"https://doi.org/{entry['doi']}")
+    if 'url' in entry:
+        links.append(entry['url'])
+    return links
+
+def bibtex_to_json(bibtex_str: str) -> Dict[str, Any]:
+    parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+    bib_database = bibtexparser.loads(bibtex_str, parser)
+    
+    result = {}
+    for entry in bib_database.entries:
+        key = entry['ID']
+        result[key] = {
+            "title": clean_text(entry.get('title', '')),
+            "links": extract_links(entry),
+            "bibtex_data": entry  # Preserve all BibTeX data
+        }
+    
+    return result
+
+def process_bibtex_file():
+    try:
+        bibtex_content = read_file(INPUT_BIB)
+        json_data = bibtex_to_json(bibtex_content)
+        
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        output_file = os.path.join(OUTPUT_DIR, 'references.json')
+        
+        json_content = json.dumps(json_data, indent=2, ensure_ascii=False)
+        write_file(output_file, json_content)
+        
+        print(f"Successfully converted BibTeX to JSON. Output saved to {output_file}")
+    except FileNotFoundError:
+        print(f"Error: Input file {INPUT_BIB} not found.")
+    except json.JSONDecodeError:
+        print("Error: Failed to encode data to JSON.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+
+if __name__ == "__main__":
+    process_bibtex_file()
+        </content>
+    </file>
+    <file>
+        <name>process_failed_scrapes.py</name>
+        <path>paper_prepper\process_failed_scrapes.py</path>
+        <content>
+# paper_prepper/create_manual_entry_files.py
+
+import os
+import json
+from utils.file_utils import read_file, write_file
+
+def create_manual_entry_files(data_dir, source_paper_name):
+    source_paper_dir = os.path.join(data_dir, source_paper_name)
+    failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
+    references_json = os.path.join(source_paper_dir, "references.json")
+    
+    if not os.path.exists(failed_scrapes_json):
+        print(f"No failed_scrapes.json found in {source_paper_dir}")
+        return
+    
+    if not os.path.exists(references_json):
+        print(f"No references.json found in {source_paper_dir}")
+        return
+    
+    failed_scrapes = json.loads(read_file(failed_scrapes_json))
+    all_references = json.loads(read_file(references_json))
+    
+    manual_entry_dir = os.path.join(source_paper_dir, "manual_entry")
+    os.makedirs(manual_entry_dir, exist_ok=True)
+    
+    for ref_name, ref_data in failed_scrapes.items():
+        file_name = f"{ref_name}_manual.txt"
+        file_path = os.path.join(manual_entry_dir, file_name)
+        
+        title = all_references.get(ref_name, {}).get('title', 'Title not available')
+        
+        content = f"Reference: {ref_name}\n"
+        content += f"Title: {title}\n"
+        content += "Original links:\n"
+        for link in ref_data['links']:
+            content += f"- {link}\n"
+        content += "\nPlease enter the reference content below this line:\n"
+        content += "=" * 50 + "\n"
+        
+        write_file(file_path, content)
+        print(f"Created manual entry file: {file_path}")
+    
+    print(f"\nCreated {len(failed_scrapes)} files for manual entry in {manual_entry_dir}")
+    print("Please manually add the reference content to these files.")
+
+if __name__ == "__main__":
+    data_dir = "data"  # Adjust this if your data directory is located elsewhere
+    source_paper_name = input("Enter the name of the source paper directory: ")
+    create_manual_entry_files(data_dir, source_paper_name)
+        </content>
+    </file>
+    <file>
+        <name>scrape_papers.py</name>
+        <path>paper_prepper\scrape_papers.py</path>
+        <content>
+# paper_prepper/reference_processor.py
+
+import os
+import json
+import shutil
+import logging
+from scraper import UnifiedWebScraper
+import asyncio
+import aiohttp
+from utils.file_utils import read_file, write_file
+
+class ReferenceProcessor:
+    def __init__(self, data_dir):
+        self.data_dir = data_dir
+        self.logger = logging.getLogger(__name__)
+
+    async def process_references(self, source_paper_name):
+        source_paper_dir = os.path.join(self.data_dir, source_paper_name)
+        original_json_file = os.path.join(source_paper_dir, "references.json")
+        successful_scrapes_json = os.path.join(source_paper_dir, "successful_scrapes.json")
+        failed_scrapes_json = os.path.join(source_paper_dir, "failed_scrapes.json")
+
+        if not os.path.exists(original_json_file):
+            raise FileNotFoundError(f"references.json not found in {source_paper_dir}")
+
+        # Load original references
+        references = json.loads(read_file(original_json_file))
+
+        # Load successful scrapes
+        successful_scrapes = self.load_json(successful_scrapes_json, {})
+
+        # Check if failed_scrapes.json exists
+        if os.path.exists(failed_scrapes_json):
+            failed_scrapes = json.loads(read_file(failed_scrapes_json))
+            references_to_process = {k: v for k, v in references.items() if k in failed_scrapes}
+            self.logger.info("Processing only failed scrapes from previous run.")
+        else:
+            failed_scrapes = {}
+            references_to_process = references
+            self.logger.info("Processing all references.")
+
+        scraped_dir = os.path.join(source_paper_dir, "scraped_references")
+        os.makedirs(scraped_dir, exist_ok=True)
+
+        async with aiohttp.ClientSession() as session:
+            scraper = UnifiedWebScraper(session=session)
+            await scraper.initialize()
+
+            for ref_name, ref_data in list(references_to_process.items()):
+                ref_dir = os.path.join(scraped_dir, ref_name)
+                os.makedirs(ref_dir, exist_ok=True)
+
+                successful_scrape = False
+                for i, link in enumerate(ref_data["links"]):
+                    try:
+                        content = await scraper.scrape(link)
+                        if content:
+                            write_file(os.path.join(ref_dir, f"link_{i+1}.md"), content)
+                            successful_scrape = True
+                    except Exception as e:
+                        self.logger.error(f"Error scraping link {link} for reference {ref_name}: {str(e)}")
+
+                if successful_scrape:
+                    md_files = [f for f in os.listdir(ref_dir) if f.endswith('.md')]
+                    if md_files:
+                        largest_file = max(
+                            (os.path.join(ref_dir, f) for f in md_files),
+                            key=os.path.getsize
+                        )
+                        target_file = os.path.join(source_paper_dir, f"{ref_name}_full.md")
+                        shutil.move(largest_file, target_file)
+                        
+                        if os.path.getsize(target_file) < 60 * 1024:
+                            os.remove(target_file)
+                            self.logger.warning(f"Scraped content for {ref_name} is less than 60KB")
+                            failed_scrapes[ref_name] = {"reason": "Content less than 60KB", "links": ref_data["links"]}
+                        else:
+                            self.logger.info(f"Successfully processed reference {ref_name}")
+                            successful_scrapes[ref_name] = {"file": f"{ref_name}_full.md", "size": os.path.getsize(target_file)}
+                            if ref_name in failed_scrapes:
+                                del failed_scrapes[ref_name]
+                    else:
+                        self.logger.warning(f"No markdown files found for reference {ref_name}")
+                        failed_scrapes[ref_name] = {"reason": "No markdown files created", "links": ref_data["links"]}
+                else:
+                    self.logger.warning(f"Failed to scrape any content for reference {ref_name}")
+                    failed_scrapes[ref_name] = {"reason": "Failed to scrape any content", "links": ref_data["links"]}
+
+            await scraper.close()
+
+        # Write updated successful and failed scrapes
+        write_file(successful_scrapes_json, json.dumps(successful_scrapes, indent=2))
+        if failed_scrapes:
+            write_file(failed_scrapes_json, json.dumps(failed_scrapes, indent=2))
+        elif os.path.exists(failed_scrapes_json):
+            os.remove(failed_scrapes_json)
+            self.logger.info("All failed scrapes have been successfully processed. Removed failed_scrapes.json.")
+
+        self.logger.info(f"Finished processing references for {source_paper_name}")
+        self.logger.info(f"Successful scrapes have been written to: {successful_scrapes_json}")
+        if failed_scrapes:
+            self.logger.info(f"Failed scrapes have been written to: {failed_scrapes_json}")
+
+        # Check if all references have been processed
+        all_processed = set(successful_scrapes.keys()).union(set(failed_scrapes.keys()))
+        if all_processed == set(references.keys()):
+            self.logger.info("All references have been processed. No further processing needed.")
+            return False  # Indicate that no further processing is needed
+        else:
+            remaining = set(references.keys()) - all_processed
+            self.logger.info(f"{len(remaining)} references still need processing.")
+            return True  # Indicate that further processing is needed
+
+    @staticmethod
+    def load_json(file_path, default):
+        if os.path.exists(file_path):
+            return json.loads(read_file(file_path))
+        return default
+
+async def main():
+    processor = ReferenceProcessor("data")
+    
+    source_paper_name = input("Enter the name of the source paper directory: ")
+
+    try:
+        needs_further_processing = await processor.process_references(source_paper_name)
+        if not needs_further_processing:
+            print("All references have been processed. The script will now exit.")
+        else:
+            print("Some references still need processing. You can run the script again to continue.")
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+    print("\nProcessing complete.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+        </content>
+    </file>
+    </directory>
+        <directory name="utils">
+    <file>
+        <name>bibtex_utils.py</name>
+        <path>paper_prepper\utils\bibtex_utils.py</path>
+        <content>
+# academic_claim_analyzer/search/bibtex.py
+
+import requests
+from typing import Optional
+
+def get_bibtex_from_doi(doi: str) -> Optional[str]:
+    """
+    Fetch BibTeX data for a given DOI using the Crossref API.
+    """
+    url = f"https://api.crossref.org/works/{doi}/transform/application/x-bibtex"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
+    return None
+
+def get_bibtex_from_title(title: str, authors: list, year: int) -> Optional[str]:
+    """
+    Search for a paper using its title, authors, and year, then fetch its BibTeX data using the Crossref API.
+    """
+    query = f"{title} {' '.join(authors)} {year}"
+    url = f"https://api.crossref.org/works?query={query}&rows=1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data['message']['items']:
+            doi = data['message']['items'][0].get('DOI')
+            if doi:
+                return get_bibtex_from_doi(doi)
+    return None
+
+# Test with main code
+def main():
+    # Example 1: Get BibTeX from DOI
+    doi = "10.1016/j.ifacol.2020.12.237"
+    bibtex_from_doi = get_bibtex_from_doi(doi)
+    print("BibTeX from DOI:")
+    print(bibtex_from_doi)
+    print("\n")
+
+    # Example 2: Get BibTeX from title, authors, and year
+    title = "Optimal control of greenhouse climate using PID and MPC algorithms"
+    authors = ["Hasni", "A.", "Taibi", "R.", "Draoui", "B.", "Boulard", "T."]
+    year = 2020
+    bibtex_from_title = get_bibtex_from_title(title, authors, year)
+    print("BibTeX from title, authors, and year:")
+    print(bibtex_from_title)
+
+if __name__ == "__main__":
+    main()
+        </content>
+    </file>
+    <file>
+        <name>file_utils.py</name>
+        <path>paper_prepper\utils\file_utils.py</path>
+        <content>
+# paper_prepper/utils/file_utils.py
+
+import chardet
+from typing import List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+def detect_encoding(file_path: str, fallback_encodings: List[str] = ['utf-8', 'iso-8859-1', 'windows-1252']) -> str:
+    """
+    Detect the encoding of a file using chardet, with fallback options.
+    
+    Args:
+    file_path (str): Path to the file
+    fallback_encodings (List[str]): List of encodings to try if chardet fails
+
+    Returns:
+    str: Detected encoding
+    """
+    # First, try to detect the encoding using chardet
+    with open(file_path, 'rb') as file:
+        raw_data = file.read()
+    detected = chardet.detect(raw_data)
+    if detected['encoding'] and detected['confidence'] > 0.7:
+        logger.info(f"Detected encoding for {file_path}: {detected['encoding']} (confidence: {detected['confidence']})")
+        return detected['encoding']
+
+    # If chardet fails or has low confidence, try fallback encodings
+    for encoding in fallback_encodings:
+        try:
+            with open(file_path, 'r', encoding=encoding) as file:
+                file.read()
+            logger.info(f"Successfully read {file_path} with fallback encoding: {encoding}")
+            return encoding
+        except UnicodeDecodeError:
+            continue
+
+    # If all attempts fail, raise an exception
+    raise ValueError(f"Unable to determine encoding for {file_path}")
+
+def read_file(file_path: str) -> str:
+    """
+    Read a file using the detected encoding.
+
+    Args:
+    file_path (str): Path to the file
+
+    Returns:
+    str: Contents of the file
+    """
+    encoding = detect_encoding(file_path)
+    with open(file_path, 'r', encoding=encoding) as file:
+        return file.read()
+
+def write_file(file_path: str, content: str, encoding: Optional[str] = None) -> None:
+    """
+    Write content to a file using the specified or detected encoding.
+
+    Args:
+    file_path (str): Path to the file
+    content (str): Content to write
+    encoding (Optional[str]): Encoding to use, if None, UTF-8 will be used
+    """
+    encoding = encoding or 'utf-8'
+    with open(file_path, 'w', encoding=encoding) as file:
+        file.write(content)
+    logger.info(f"Successfully wrote to {file_path} using encoding: {encoding}")
+        </content>
+    </file>
+    <file>
         <name>scraper.py</name>
-        <path>paper_prepper\scraper.py</path>
+        <path>paper_prepper\utils\scraper.py</path>
         <content>
 import os
 import re
@@ -3979,115 +3979,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-        </content>
-    </file>
-    <file>
-        <name>test_pdf_download.py</name>
-        <path>paper_prepper\test_pdf_download.py</path>
-        <content>
-import requests
-import os
-
-def download_pdf(url, output_path):
-    # Send a GET request to the URL
-    response = requests.get(url)
-    
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Get the content type from the headers
-        content_type = response.headers.get('Content-Type', '').lower()
-        
-        # Check if the content is a PDF
-        if 'application/pdf' in content_type:
-            # Write the content to a file
-            with open(output_path, 'wb') as f:
-                f.write(response.content)
-            print(f"PDF downloaded successfully: {output_path}")
-        else:
-            print("The URL does not point to a PDF file.")
-    else:
-        print(f"Failed to download. Status code: {response.status_code}")
-
-# Example usage
-url = "https://www.jstage.jst.go.jp/article/jnsv/66/Supplement/66_S18/_pdf"
-output_path = os.path.join(os.getcwd(), "downloaded_paper.pdf")
-
-download_pdf(url, output_path)
-        </content>
-    </file>
-    </directory>
-        <directory name="utils">
-    <file>
-        <name>file_utils.py</name>
-        <path>paper_prepper\utils\file_utils.py</path>
-        <content>
-# paper_prepper/utils/file_utils.py
-
-import chardet
-from typing import List, Optional
-import logging
-
-logger = logging.getLogger(__name__)
-
-def detect_encoding(file_path: str, fallback_encodings: List[str] = ['utf-8', 'iso-8859-1', 'windows-1252']) -> str:
-    """
-    Detect the encoding of a file using chardet, with fallback options.
-    
-    Args:
-    file_path (str): Path to the file
-    fallback_encodings (List[str]): List of encodings to try if chardet fails
-
-    Returns:
-    str: Detected encoding
-    """
-    # First, try to detect the encoding using chardet
-    with open(file_path, 'rb') as file:
-        raw_data = file.read()
-    detected = chardet.detect(raw_data)
-    if detected['encoding'] and detected['confidence'] > 0.7:
-        logger.info(f"Detected encoding for {file_path}: {detected['encoding']} (confidence: {detected['confidence']})")
-        return detected['encoding']
-
-    # If chardet fails or has low confidence, try fallback encodings
-    for encoding in fallback_encodings:
-        try:
-            with open(file_path, 'r', encoding=encoding) as file:
-                file.read()
-            logger.info(f"Successfully read {file_path} with fallback encoding: {encoding}")
-            return encoding
-        except UnicodeDecodeError:
-            continue
-
-    # If all attempts fail, raise an exception
-    raise ValueError(f"Unable to determine encoding for {file_path}")
-
-def read_file(file_path: str) -> str:
-    """
-    Read a file using the detected encoding.
-
-    Args:
-    file_path (str): Path to the file
-
-    Returns:
-    str: Contents of the file
-    """
-    encoding = detect_encoding(file_path)
-    with open(file_path, 'r', encoding=encoding) as file:
-        return file.read()
-
-def write_file(file_path: str, content: str, encoding: Optional[str] = None) -> None:
-    """
-    Write content to a file using the specified or detected encoding.
-
-    Args:
-    file_path (str): Path to the file
-    content (str): Content to write
-    encoding (Optional[str]): Encoding to use, if None, UTF-8 will be used
-    """
-    encoding = encoding or 'utf-8'
-    with open(file_path, 'w', encoding=encoding) as file:
-        file.write(content)
-    logger.info(f"Successfully wrote to {file_path} using encoding: {encoding}")
         </content>
     </file>
         </directory>
