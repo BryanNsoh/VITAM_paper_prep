@@ -1,0 +1,2275 @@
+Context extraction timestamp: 20240813_084652
+
+<repository_structure>
+<directory name="VITAM_paper_prep">
+    <file>
+        <name>.env</name>
+        <path>.env</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>.gitignore</name>
+        <path>.gitignore</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>downloaded_paper.pdf</name>
+        <path>downloaded_paper.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>README.md</name>
+        <path>README.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>repo_context_extractor.py</name>
+        <path>repo_context_extractor.py</path>
+        <content>
+import os
+import datetime
+
+EXCLUDED_DIRS = {".git", "__pycache__", "node_modules", ".venv"}
+FULL_CONTENT_EXTENSIONS = {".py", ".toml", ".dbml", ".yaml", ".json"}
+
+def create_file_element(file_path, root_folder):
+    relative_path = os.path.relpath(file_path, root_folder)
+    file_name = os.path.basename(file_path)
+    file_extension = os.path.splitext(file_name)[1]
+
+    file_element = [
+        f"    <file>\n        <name>{file_name}</name>\n        <path>{relative_path}</path>\n"
+    ]
+
+    if file_extension in FULL_CONTENT_EXTENSIONS:
+        file_element.append("        <content>\n")
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                file_element.append(file.read())
+        except UnicodeDecodeError:
+            file_element.append("Binary or non-UTF-8 content not displayed")
+        file_element.append("\n        </content>\n")
+    else:
+        file_element.append("        <content>Full content not provided</content>\n")
+
+    file_element.append("    </file>\n")
+    return "".join(file_element)
+
+def get_repo_structure(root_folder):
+    structure = ["<repository_structure>\n"]
+
+    for subdir, dirs, files in os.walk(root_folder):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        level = subdir.replace(root_folder, "").count(os.sep)
+        indent = " " * 4 * level
+        relative_subdir = os.path.relpath(subdir, root_folder)
+
+        structure.append(f'{indent}<directory name="{os.path.basename(subdir)}">\n')
+        for file in files:
+            file_path = os.path.join(subdir, file)
+            file_element = create_file_element(file_path, root_folder)
+            structure.append(file_element)
+        structure.append(f"{indent}</directory>\n")
+
+    structure.append("</repository_structure>\n")
+    return "".join(structure)
+
+def main():
+    root_folder = os.getcwd()  # Use the current working directory
+    base_dir = os.path.basename(root_folder)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(root_folder, f"{base_dir}_context_{timestamp}.txt")
+
+    # Delete the previous output file if it exists
+    for file in os.listdir(root_folder):
+        if file.startswith(f"{base_dir}_context_") and file.endswith(".txt"):
+            os.remove(os.path.join(root_folder, file))
+            print(f"Deleted previous context file: {file}")
+
+    repo_structure = get_repo_structure(root_folder)
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(f"Context extraction timestamp: {timestamp}\n\n")
+        f.write(repo_structure)
+
+    print(f"Fresh repository context has been extracted to {output_file}")
+
+if __name__ == "__main__":
+    main()
+        </content>
+    </file>
+    <file>
+        <name>requirements.txt</name>
+        <path>requirements.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>scraper.log</name>
+        <path>scraper.log</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>setup.py</name>
+        <path>setup.py</path>
+        <content>
+# setup.py
+import subprocess
+import sys
+from setuptools import setup, find_packages
+from setuptools.command.develop import develop
+from setuptools.command.install import install
+
+class PostInstallCommand(install):
+    def run(self):
+        install.run(self)
+        self.install_playwright()
+
+    def install_playwright(self):
+        subprocess.check_call([sys.executable, "-m", "playwright", "install"])
+
+class PostDevelopCommand(develop):
+    def run(self):
+        develop.run(self)
+        self.install_playwright()
+
+    def install_playwright(self):
+        subprocess.check_call([sys.executable, "-m", "playwright", "install"])
+
+with open('README.md', 'r', encoding='utf-8') as f:
+    long_description = f.read()
+
+setup(
+    name='vitam-paper-prep',
+    version='0.1.0',
+    author='Your Name',
+    author_email='your.email@example.com',
+    description='A tool for processing academic paper references',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/yourusername/VITAM_paper_prep',
+    packages=find_packages(),
+    install_requires=[
+        'aiohttp',
+        'beautifulsoup4',
+        'PyMuPDF',
+        'playwright==1.36.0',
+        'fake-useragent',
+        'markdownify',
+        'requests',
+    ],
+    extras_require={
+        'dev': ['pytest', 'pytest-asyncio'],
+    },
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+    ],
+    python_requires='>=3.7',
+    entry_points={
+        'console_scripts': [
+            'process_references=paper_prepper.reference_processor:main',
+        ],
+    },
+    cmdclass={
+        'develop': PostDevelopCommand,
+        'install': PostInstallCommand,
+    },
+)
+        </content>
+    </file>
+</directory>
+    <directory name="data">
+    </directory>
+        <directory name="bergworth_sugar_cardiovascular">
+    <file>
+        <name>Ahmad 2020_full.pdf</name>
+        <path>data\bergworth_sugar_cardiovascular\Ahmad 2020_full.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Black 2006_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Black 2006_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Campos 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Campos 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Ebbeling 2020_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Ebbeling 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Geidl-Flueck 2021_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Geidl-Flueck 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Johnson 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Johnson 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lewis 2013_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lewis 2013_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lowndes 2014a_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lowndes 2014a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Lowndes 2014b_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Lowndes 2014b_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Madero 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Madero 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Maersk 2012_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Maersk 2012_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Maki 2015_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Maki 2015_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Mann 1972_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Mann 1972_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Markey 2016_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Markey 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njike 2011_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Njike 2011_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Raben 2002_full.pdf</name>
+        <path>data\bergworth_sugar_cardiovascular\Raben 2002_full.pdf</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\bergworth_sugar_cardiovascular\references.json</path>
+        <content>
+{
+    "Ahmad 2020": {
+      "title": "Effects of high and low sugar diets on cardiovascular disease risk factors",
+      "doi": "10.1159/000501751",
+      "links": [
+        "http://dx.doi.org/10.1159/000501751",
+        "https://doi.org/10.3177/jnsv.66.S18",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33612591",
+        "http://dx.doi.org/10.3177/jnsv.66.S18"
+      ]
+    },
+    "Black 2006": {
+      "title": "Effect of eucaloric high- and low-sucrose diets with identical macronutrient profile on insulin resistance and vascular risk: a randomized controlled trial",
+      "doi": "10.2337/db06-0220",
+      "links": [
+        "http://dx.doi.org/10.2337/db06-0220",
+        "https://doi.org/10.2337/db06-0220",
+        "https://www.ncbi.nlm.nih.gov/pubmed/17130505"
+      ]
+    },
+    "Campos 2015": {
+      "title": "Sugar- and artificially sweetened beverages and intrahepatic fat: a randomized controlled trial",
+      "doi": "10.1002/oby.21310",
+      "links": [
+        "http://dx.doi.org/10.1002/oby.21310",
+        "https://doi.org/10.1002/oby.21310",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26727115",
+        "https://doi.org/10.1096/fasebj.29.1_supplement.602.5"
+      ]
+    },
+    "Ebbeling 2020": {
+      "title": "Effects of sugar-sweetened, artificially sweetened, and unsweetened beverages on cardiometabolic risk factors, body composition, and sweet taste preference: a randomized controlled trial",
+      "doi": "10.1161/JAHA.119.015668",
+      "links": [
+        "http://dx.doi.org/10.1161/circ.139.suppl_1.044",
+        "https://doi.org/10.1161/circ.139.suppl_1.044",
+        "http://dx.doi.org/10.1161/JAHA.119.015668",
+        "https://doi.org/10.1161/JAHA.119.015668",
+        "https://www.ncbi.nlm.nih.gov/pubmed/32696704"
+      ]
+    },
+    "Geidl-Flueck 2021": {
+      "title": "Fructose- and sucrose- but not glucose-sweetened beverages promote hepatic de novo lipogenesis: a randomized controlled trial",
+      "doi": null,
+      "links": [
+        "https://doi.org/10.1016/j.jhep.2021.02.027",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33684506"
+      ]
+    },
+    "Johnson 2015": {
+      "title": "Fructose content of low calorie diets: effect on cardiometabolic risk factors in obese women with polycystic ovarian syndrome: a randomized controlled trial",
+      "doi": "10.1530/EC-15-0047",
+      "links": [
+        "http://dx.doi.org/10.1530/EC-15-0047",
+        "https://doi.org/10.1530/EC-15-0047",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26138702"
+      ]
+    },
+    "Lewis 2013": {
+      "title": "Comparison of 5% versus 15% sucrose intakes as part of a eucaloric diet in overweight and obese subjects: effects on insulin sensitivity, glucose metabolism, vascular compliance, body composition and lipid profile. A randomised controlled trial",
+      "doi": "10.1016/j.metabol.2012.11.008",
+      "links": [
+        "https://doi.org/10.1186/ISRCTN50808730",
+        "http://dx.doi.org/10.1016/j.metabol.2012.11.008",
+        "https://doi.org/10.1016/j.metabol.2012.11.008",
+        "https://www.ncbi.nlm.nih.gov/pubmed/23363580"
+      ]
+    },
+    "Lowndes 2014a": {
+      "title": "The effects of fructose-containing sugars on weight, body composition and cardiometabolic risk factors when consumed at up to the 90th percentile population consumption level for fructose",
+      "doi": "10.3390/nu6083153",
+      "links": [
+        "http://dx.doi.org/10.3390/nu6083153",
+        "https://doi.org/10.3390/nu6083153",
+        "https://www.ncbi.nlm.nih.gov/pubmed/25111121",
+        "http://dx.doi.org/10.1016/j.nutres.2013.07.020",
+        "https://doi.org/10.1016/j.nutres.2013.07.020",
+        "https://www.ncbi.nlm.nih.gov/pubmed/24267044"
+      ]
+    },
+    "Lowndes 2014b": {
+      "title": "The effect of normally consumed amounts of sucrose or high fructose corn syrup on lipid profiles, body composition and related parameters in overweight/obese subjects",
+      "doi": "10.3390/nu6031128",
+      "links": [
+        "http://dx.doi.org/10.3390/nu6031128",
+        "https://doi.org/10.3390/nu6031128",
+        "https://www.ncbi.nlm.nih.gov/pubmed/24642950"
+      ]
+    },
+    "Madero 2015": {
+      "title": "A pilot study on the impact of a low fructose diet and allopurinol on clinic blood pressure among overweight and prehypertensive subjects: a randomized placebo controlled trial",
+      "doi": "10.1016/j.jash.2015.07.008",
+      "links": [
+        "http://dx.doi.org/10.1016/j.jash.2015.07.008",
+        "https://doi.org/10.1016/j.jash.2015.07.008",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26329473"
+      ]
+    },
+    "Maersk 2012": {
+      "title": "Sucrose-sweetened beverages increase fat storage in the liver, muscle, and visceral fat depot: a 6-mo randomized intervention study",
+      "doi": "10.3945/ajcn.111.022533",
+      "links": [
+        "http://dx.doi.org/10.1038/s41430-017-0006-9",
+        "https://doi.org/10.1038/s41430-017-0006-9",
+        "https://www.ncbi.nlm.nih.gov/pubmed/29235560",
+        "http://dx.doi.org/10.3945/ajcn.111.022533",
+        "https://doi.org/10.3945/ajcn.111.022533",
+        "https://www.ncbi.nlm.nih.gov/pubmed/22205311"
+      ]
+    },
+    "Maki 2015": {
+      "title": "Sugar-sweetened product consumption alters glucose homeostasis compared with dairy product consumption in men and women at risk of type 2 diabetes mellitus",
+      "doi": "10.3945/jn.114.204503",
+      "links": [
+        "http://dx.doi.org/10.3945/jn.114.204503",
+        "https://doi.org/10.3945/jn.114.204503",
+        "https://www.ncbi.nlm.nih.gov/pubmed/25733460"
+      ]
+    },
+    "Mann 1972": {
+      "title": "Effects on serum lipids of reducing dietary sucrose or starch for 22 weeks in normal men",
+      "doi": null,
+      "links": [
+        "http://dx.doi.org/10.1016/s0140-6736(70)91696-x",
+        "https://doi.org/10.1016/S0140-6736(70)91696-X",
+        "https://www.ncbi.nlm.nih.gov/pubmed/4191513"
+      ]
+    },
+    "Markey 2016": {
+      "title": "Energy compensation following consumption of sugar-reduced products: a randomized controlled trial",
+      "doi": "10.1007/s00394-015-1028-5",
+      "links": [
+        "http://dx.doi.org/10.1007/s00394-015-1028-5",
+        "https://doi.org/10.1007/s00394-015-1028-5",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26349919",
+        "http://dx.doi.org/10.1017/S0029665113002395",
+        "https://doi.org/10.1017/S0029665113002395"
+      ]
+    },
+    "Njike 2011": {
+      "title": "Effects of sugar-sweetened and sugar-free cocoa on endothelial function in overweight adults",
+      "doi": "10.1016/j.ijcard.2009.12.010",
+      "links": [
+        "http://dx.doi.org/10.1016/j.ijcard.2009.12.010",
+        "https://doi.org/10.1016/j.ijcard.2009.12.010",
+        "https://www.ncbi.nlm.nih.gov/pubmed/20036019"
+      ]
+    },
+    "Raben 2002": {
+      "title": "Sucrose compared with artificial sweeteners: different effects on ad libitum food intake and body weight after 10 wk of supplementation in overweight subjects",
+      "doi": null,
+      "links": [
+        "https://doi.org/10.3402/fnr.v55i0.5961",
+        "https://doi.org/10.1093/ajcn/76.4.721",
+        "https://www.ncbi.nlm.nih.gov/pubmed/12324283"
+      ]
+    },
+    "Sanchez-Delgado 2021": {
+      "title": "Changes in nutrient and calorie intake, adipose mass, triglycerides and TNF-alpha concentrations after non-caloric sweetener intake: a pilot study",
+      "doi": "10.1024/0300-9831/a000611",
+      "links": [
+        "https://doi.org/10.1024/0300-9831/a000611",
+        "https://www.ncbi.nlm.nih.gov/pubmed/31656130"
+      ]
+    },
+    "Smith 1996": {
+      "title": "The effect of reduced extrinsic sucrose intake on plasma triglyceride levels",
+      "doi": null,
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/8863009"
+      ]
+    },
+    "Surwit 1997": {
+      "title": "Metabolic and behavioral effects of a high-sucrose diet during weight loss",
+      "doi": "10.1093/ajcn/65.4.908",
+      "links": [
+        "http://dx.doi.org/10.1093/ajcn/65.4.908",
+        "https://doi.org/10.1093/ajcn/65.4.908",
+        "https://www.ncbi.nlm.nih.gov/pubmed/9094871"
+      ]
+    },
+    "Umpleby 2017": {
+      "title": "Impact of liver fat on the differential partitioning of hepatic triacylglycerol into VLDL subclasses on high and low sugar diets",
+      "doi": "10.1042/CS20171208",
+      "links": [
+        "http://dx.doi.org/10.1042/CS20171208",
+        "https://doi.org/10.1042/CS20171208",
+        "https://www.ncbi.nlm.nih.gov/pubmed/28923880",
+        "https://doi.org/10.1016/j.atherosclerosis.2015.04.164"
+      ]
+    },
+    "Vazquez-Duran 2016": {
+      "title": "A randomized control trial for reduction of caloric and non-caloric sweetened beverages in young adults: effects in weight, body composition and blood pressure",
+      "doi": "10.20960/nh.797",
+      "links": [
+        "http://dx.doi.org/10.1177/2047487314530052",
+        "http://dx.doi.org/10.20960/nh.797",
+        "https://doi.org/10.20960/nh.797",
+        "https://www.ncbi.nlm.nih.gov/pubmed/28000468"
+      ]
+    }
+  }
+        </content>
+    </file>
+    <file>
+        <name>Sanchez-Delgado 2021_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Sanchez-Delgado 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Smith 1996_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Smith 1996_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Surwit 1997_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Surwit 1997_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Umpleby 2017_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Umpleby 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Vazquez-Duran 2016_full.md</name>
+        <path>data\bergworth_sugar_cardiovascular\Vazquez-Duran 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+        </directory>
+            <directory name="scraped_references">
+            </directory>
+                <directory name="Ahmad 2020">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ahmad 2020\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Black 2006">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Black 2006\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Black 2006\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Campos 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Campos 2015\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Ebbeling 2020">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Ebbeling 2020\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Geidl-Flueck 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Geidl-Flueck 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Johnson 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Johnson 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Johnson 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lewis 2013">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lewis 2013\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lowndes 2014a">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_6.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014a\link_6.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Lowndes 2014b">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014b\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Lowndes 2014b\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Madero 2015">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Madero 2015\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Madero 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Maersk 2012">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_6.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maersk 2012\link_6.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Maki 2015">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maki 2015\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Maki 2015\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Mann 1972">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Mann 1972\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Mann 1972\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Markey 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_5.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Markey 2016\link_5.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njike 2011">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Njike 2011\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Njike 2011\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Raben 2002">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Raben 2002\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Raben 2002\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Sanchez-Delgado 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Sanchez-Delgado 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Smith 1996">
+                </directory>
+                <directory name="Surwit 1997">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Surwit 1997\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Surwit 1997\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Umpleby 2017">
+    <file>
+        <name>link_1.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Umpleby 2017\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Vazquez-Duran 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_3.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_3.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>link_4.md</name>
+        <path>data\bergworth_sugar_cardiovascular\scraped_references\Vazquez-Duran 2016\link_4.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+        <directory name="sample_paper">
+    <file>
+        <name>link_extractioon_prompt.txt</name>
+        <path>data\sample_paper\link_extractioon_prompt.txt</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\sample_paper\references.json</path>
+        <content>
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Paper References",
+    "description": "A collection of references for studies included in a review, containing title, DOI, and full text links.",
+    "type": "object",
+    "additionalProperties": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the research paper"
+        },
+        "doi": {
+          "type": ["string", "null"],
+          "description": "Digital Object Identifier (DOI) of the research paper, may be null if not available"
+        },
+        "links": {
+          "type": "array",
+          "description": "List of URLs likely to contain the full text of the paper",
+          "items": {
+            "type": "string",
+            "description": "A URL pointing to the paper, a DOI link, or a trial registry entry"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "doi",
+        "links"
+      ]
+    }
+  }
+        </content>
+    </file>
+        </directory>
+        <directory name="taylor_et_al">
+    <file>
+        <name>Ahorlu 2018_full.md</name>
+        <path>data\taylor_et_al\Ahorlu 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Amarillo 2008_full.md</name>
+        <path>data\taylor_et_al\Amarillo 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2003_full.md</name>
+        <path>data\taylor_et_al\Babu 2003_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2004a_full.md</name>
+        <path>data\taylor_et_al\Babu 2004a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2004b_full.md</name>
+        <path>data\taylor_et_al\Babu 2004b_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2008_full.md</name>
+        <path>data\taylor_et_al\Babu 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Babu 2010_full.md</name>
+        <path>data\taylor_et_al\Babu 2010_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Banerjee 2019_full.md</name>
+        <path>data\taylor_et_al\Banerjee 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Biritwum 2017_full.md</name>
+        <path>data\taylor_et_al\Biritwum 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Cassidy 2016_full.md</name>
+        <path>data\taylor_et_al\Cassidy 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Gonzales 2019_full.md</name>
+        <path>data\taylor_et_al\Gonzales 2019_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Hussain 2014_full.md</name>
+        <path>data\taylor_et_al\Hussain 2014_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>King 2011_full.md</name>
+        <path>data\taylor_et_al\King 2011_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kisoka 2016_full.md</name>
+        <path>data\taylor_et_al\Kisoka 2016_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kisoka 2017_full.md</name>
+        <path>data\taylor_et_al\Kisoka 2017_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2008_full.md</name>
+        <path>data\taylor_et_al\Krentel 2008_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2012_full.md</name>
+        <path>data\taylor_et_al\Krentel 2012_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2018_full.md</name>
+        <path>data\taylor_et_al\Krentel 2018_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Krentel 2021_full.md</name>
+        <path>data\taylor_et_al\Krentel 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Kusi 2020_full.md</name>
+        <path>data\taylor_et_al\Kusi 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Manyeh 2020_full.md</name>
+        <path>data\taylor_et_al\Manyeh 2020_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Manyeh 2021_full.md</name>
+        <path>data\taylor_et_al\Manyeh 2021_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>Njomo 2012a_full.md</name>
+        <path>data\taylor_et_al\Njomo 2012a_full.md</path>
+        <content>Full content not provided</content>
+    </file>
+    <file>
+        <name>references.json</name>
+        <path>data\taylor_et_al\references.json</path>
+        <content>
+{
+    "Ahorlu 2018": {
+      "title": "Community perspectives on persistent transmission of lymphatic filariasis in three hotspot districts in Ghana after 15 rounds of mass drug administration: a qualitative assessment",
+      "links": [
+        "https://doi.org/10.1186/s12889-018-5157-7",
+        "https://www.ncbi.nlm.nih.gov/pubmed/29433461"
+      ]
+    },
+    "Amarillo 2008": {
+      "title": "Factors associated with the acceptance of mass drug administration for the elimination of lymphatic filariasis in Agusan del Sur, Philippines",
+      "links": [
+        "https://doi.org/10.1186/1756-3305-1-14",
+        "https://www.ncbi.nlm.nih.gov/pubmed/18505577"
+      ]
+    },
+    "Babu 2003": {
+      "title": "Factors responsible for coverage and compliance in mass drug administration during the programme to eliminate lymphatic filariasis in the East Godavari District, South India",
+      "links": [
+        "https://doi.org/10.1177/004947550303300208",
+        "https://www.ncbi.nlm.nih.gov/pubmed/12680538"
+      ]
+    },
+    "Babu 2004a": {
+      "title": "The programme to eliminate lymphatic filariasis in Orissa, India: the attitudes of some programme partners",
+      "links": [
+        "https://doi.org/10.1179/000349804225021433",
+        "https://www.ncbi.nlm.nih.gov/pubmed/15509429"
+      ]
+    },
+    "Babu 2004b": {
+      "title": "Coverage, compliance and some operational issues of mass drug administration during the programme to eliminate lymphatic filariasis in Orissa, India",
+      "links": [
+        "https://doi.org/10.1111/j.1365-3156.2004.01247.x"
+      ]
+    },
+    "Babu 2008": {
+      "title": "Mass drug administration under the programme to eliminate lymphatic filariasis in Orissa, India: a mixed-methods study to identify factors associated with compliance and non-compliance",
+      "links": [
+        "https://doi.org/10.1016/j.trstmh.2008.05.023",
+        "https://www.ncbi.nlm.nih.gov/pubmed/18632125"
+      ]
+    },
+    "Babu 2010": {
+      "title": "A qualitative study on the adverse reactions of mass treatment for lymphatic filariasis in Orissa, India",
+      "links": [
+        "https://doi.org/10.1016/S1995-7645(10)60033-8"
+      ]
+    },
+    "Banerjee 2019": {
+      "title": "Coverage of mass drug administration for elimination of lymphatic filariasis in urban Nagpur, Central India: a mixed method study",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/31681683"
+      ]
+    },
+    "Biritwum 2017": {
+      "title": "Improving drug delivery strategies for lymphatic filariasis elimination in urban areas in Ghana",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0005619",
+        "https://www.ncbi.nlm.nih.gov/pubmed/28493966"
+      ]
+    },
+    "Cassidy 2016": {
+      "title": "Experiences of a community-based lymphedema management program for lymphatic filariasis in Odisha State, India: an analysis of focus group discussions with patients, families, community members and program volunteers",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0004424",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26849126"
+      ]
+    },
+    "Gonzales 2019": {
+      "title": "How lymphatic filariasis was eliminated from an urban poor setting in Santo Domingo, Dominican Republic",
+      "links": [
+        "https://doi.org/10.1093/inthealth/ihy059",
+        "https://www.ncbi.nlm.nih.gov/pubmed/30285112"
+      ]
+    },
+    "Hussain 2014": {
+      "title": "Mass drug administration for lymphatic filariasis elimination in a coastal state of India: a study on barriers to coverage and compliance",
+      "links": [
+        "https://doi.org/10.1186/2049-9957-3-31",
+        "https://www.ncbi.nlm.nih.gov/pubmed/25237478"
+      ]
+    },
+    "King 2011": {
+      "title": "Improving community participation to eliminate lymphatic filariasis in American Samoa",
+      "links": [
+        "https://doi.org/10.1016/j.actatropica.2010.08.021",
+        "https://www.ncbi.nlm.nih.gov/pubmed/20932818"
+      ]
+    },
+    "Kisoka 2016": {
+      "title": "Community members perceptions of mass drug administration for control of lymphatic filariasis in rural and urban Tanzania",
+      "links": [
+        "https://doi.org/10.1017/S0021932015000024",
+        "https://www.ncbi.nlm.nih.gov/pubmed/25790081"
+      ]
+    },
+    "Kisoka 2017": {
+      "title": "Dilemmas of community-directed mass drug administration for lymphatic filariasis: a qualitative study from urban and rural Tanzania",
+      "links": [
+        "https://doi.org/10.1017/S0021932016000365",
+        "https://www.ncbi.nlm.nih.gov/pubmed/27470198"
+      ]
+    },
+    "Krentel 2012": {
+      "title": "Causal chain mapping: a novel method to analyse treatment compliance decisions relating to lymphatic filariasis elimination in Alor, Indonesia",
+      "links": [
+        "https://doi.org/10.1093/heapol/czr048",
+        "https://www.ncbi.nlm.nih.gov/pubmed/21712348"
+      ]
+    },
+    "Krentel 2018": {
+      "title": "The role of gender relations in uptake of mass drug administration for lymphatic filariasis in Alor District, Indonesia",
+      "links": [
+        "https://doi.org/10.1186/s13071-018-2689-8",
+        "https://www.ncbi.nlm.nih.gov/pubmed/29530082"
+      ]
+    },
+    "Krentel 2008": {
+      "title": "Why do individuals comply with mass drug administration for lymphatic filariasis? A case study from Alor District, Indonesia",
+      "links": [
+        "researchonline.lshtm.ac.uk/1742274/"
+      ]
+    },
+    "Krentel 2021": {
+      "title": "A multicenter, community-based, mixed methods assessment of the acceptability of a triple drug regimen for elimination of lymphatic filariasis",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0009002",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33657090"
+      ]
+    },
+    "Kusi 2020": {
+      "title": "The fight against lymphatic filariasis: perceptions of community drug distributors during mass drug administration in coastal Kenya",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/32114985"
+      ]
+    },
+    "Manyeh 2020": {
+      "title": "Exploring factors affecting quality implementation of lymphatic filariasis mass drug administration in Bole and Central Gonja Districts in Northern Ghana",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0007009",
+        "https://www.ncbi.nlm.nih.gov/pubmed/32804967"
+      ]
+    },
+    "Manyeh 2021": {
+      "title": "Evaluating context-specific evidence-based quality improvement intervention on lymphatic filariasis mass drug administration in Northern Ghana using the RE-AIM framework",
+      "links": [
+        "https://doi.org/10.1186/s41182-021-00305-3",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33602322"
+      ]
+    },
+    "Njomo 2012a": {
+      "title": "Factors associated with the motivation of community drug distributors in the Lymphatic Filariasis Elimination Programme in Kenya",
+      "links": [
+        "https://doi.org/10.1080/10158782.2012.11441487"
+      ]
+    },
+    "Njomo 2012b": {
+      "title": "Social mobilization and compliance with mass treatment for lymphatic filariasis elimination in Kenya",
+      "links": []
+    },
+    "Njomo 2012c": {
+      "title": "The role of personal opinions and experiences in compliance with mass drug administration for lymphatic filariasis elimination in Kenya",
+      "links": [
+        "https://doi.org/10.1371/journal.pone.0048395",
+        "https://www.ncbi.nlm.nih.gov/pubmed/23185256"
+      ]
+    },
+    "Njomo 2014": {
+      "title": "Increasing coverage in mass drug administration for lymphatic filariasis elimination in an urban setting: a study of Malindi Town, Kenya",
+      "links": [
+        "https://doi.org/10.1371/journal.pone.0083413",
+        "https://www.ncbi.nlm.nih.gov/pubmed/24454703"
+      ]
+    },
+    "Njomo 2020a": {
+      "title": "Addressing barriers of community participation and access to mass drug administration for lymphatic filariasis elimination in Coastal Kenya using a participatory approach",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0008499",
+        "https://www.ncbi.nlm.nih.gov/pubmed/32936792"
+      ]
+    },
+    "Njomo 2020b": {
+      "title": "Implementation challenges and opportunities for improved mass treatment uptake for lymphatic filariasis elimination: perceptions and experiences of community drug distributors of coastal Kenya",
+      "links": []
+    },
+    "Parker 2013": {
+      "title": "Will mass drug administration eliminate lymphatic filariasis? Evidence from northern coastal Tanzania",
+      "links": [
+        "https://doi.org/10.1017/S0021932012000466",
+        "https://www.ncbi.nlm.nih.gov/pubmed/23014581"
+      ]
+    },
+    "Ramaiah 2000": {
+      "title": "A programme to eliminate lymphatic filariasis in Tamil Nadu state, India: compliance with annual single-dose DEC mass treatment and some related operational aspects",
+      "links": [
+        "https://doi.org/10.1046/j.1365-3156.2000.00659.x"
+      ]
+    },
+    "Silumbwe 2019": {
+      "title": "How community engagement strategies shape participation in mass drug administration programmes for lymphatic filariasis: the case of Luangwa District, Zambia",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0007861",
+        "https://www.ncbi.nlm.nih.gov/pubmed/31774820"
+      ]
+    },
+    "Wodnik 2020": {
+      "title": "The roles of stakeholder experience and organizational learning in declining mass drug administration coverage for lymphatic filariasis in Port-au-Prince, Haiti: a case study",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0008318",
+        "https://www.ncbi.nlm.nih.gov/pubmed/32469860"
+      ]
+    },
+    "Wynd 2007": {
+      "title": "Qualitative analysis of the impact of a lymphatic filariasis elimination programme using mass drug administration on Misima Island, Papua New Guinea",
+      "links": [
+        "https://doi.org/10.1186/1475-2883-6-1",
+        "https://www.ncbi.nlm.nih.gov/pubmed/17196113"
+      ]
+    },
+    "Adekeye 2020": {
+      "title": "Mass administration of medicines in changing contexts: acceptability, adaptability and community directed approaches in Kaduna and Ogun States, Nigeria",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0008857",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33237933"
+      ]
+    },
+    "Babu 2004c": {
+      "title": "Knowledge and beliefs about elephantiasis and hydrocele of lymphatic filariasis and some socio-demographic determinants in an endemic community of Eastern India",
+      "links": [
+        "https://doi.org/10.1016/S0033-3506(03)00144-6",
+        "https://www.ncbi.nlm.nih.gov/pubmed/15037042"
+      ]
+    },
+    "Baker 2007": {
+      "title": "The impact of integrating the elimination programme for lymphatic filariasis into primary health care in the Dominican Republic",
+      "links": [
+        "https://doi.org/10.1002/hpm.900",
+        "https://www.ncbi.nlm.nih.gov/pubmed/17729213"
+      ]
+    },
+    "Banerjee 2018": {
+      "title": "Mass drug administration coverage evaluation survey for lymphatic filariasis: an experience from Paschim Bardhaman district, West Bengal",
+      "links": []
+    },
+    "Benjamin 2018": {
+      "title": "Ending mass treatment for lymphatic filariasis in 87 health districts in Cameroon",
+      "links": []
+    },
+    "Bhullar 2010": {
+      "title": "Challenges in mass drug administration for treating lymphatic filariasis in Papua, Indonesia",
+      "links": [
+        "https://doi.org/10.1186/1756-3305-3-70",
+        "https://www.ncbi.nlm.nih.gov/pubmed/20701744"
+      ]
+    },
+    "Bogus 2016": {
+      "title": "Community attitudes toward mass drug administration for control and elimination of neglected tropical diseases after the 2014 outbreak of Ebola virus disease in Lofa County, Liberia",
+      "links": [
+        "https://doi.org/10.4269/ajtmh.15-0591",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26666700"
+      ]
+    },
+    "Cabral 2017": {
+      "title": "Knowledge, attitudes and perceptions regarding lymphatic filariasis: study on systematic noncompliance with mass drug administration",
+      "links": [
+        "https://doi.org/10.1590/s1678-9946201759023",
+        "https://www.ncbi.nlm.nih.gov/pubmed/28443941"
+      ]
+    },
+  "Coulibaly 2014": {
+      "title": "Lymphatic filariasis elimination: assessment of two villages with different endemicity levels in a previously highly endemic region (Sikasso) of Mali",
+      "links": []
+    },
+    "Da-Costa Vroom 2014": {
+      "title": "Application of the unified theory of acceptance and use on community health volunteers' acceptance of M health",
+      "links": []
+    },
+    "Da-Costa Vroom 2015": {
+      "title": "Data reporting constraints for the lymphatic filariasis mass drug administration activities in two districts in Ghana: a qualitative study",
+      "links": [
+        "https://doi.org/10.1177/2050312115594083",
+        "https://www.ncbi.nlm.nih.gov/pubmed/26770791"
+      ]
+    },
+    "Das 2005": {
+      "title": "Knowledge of lymphatic filariasis among the population of an endemic area in rural Madhya Pradesh, India",
+      "links": [
+        "https://doi.org/10.1179/136485905X17416",
+        "https://www.ncbi.nlm.nih.gov/pubmed/15701261"
+      ]
+    },
+    "Derua 2018": {
+      "title": "Lymphatic filariasis control in Tanzania: infection, disease perceptions and drug uptake patterns in an endemic community after multiple rounds of mass drug administration",
+      "links": [
+        "https://doi.org/10.1186/s13071-018-2999-x",
+        "https://www.ncbi.nlm.nih.gov/pubmed/30029675"
+      ]
+    },
+    "Ikawati 2018": {
+      "title": "The threat of lymphatic filariasis elimination failure in Pasaman Barat district, West Sumatra Province",
+      "links": [
+        "https://doi.org/10.5958/0976-5506.2018.00595.8"
+      ]
+    },
+    "Ipa 2018": {
+      "title": "Performance of health cadres on mass drug administration filariasis programme in Cibeureum and Cibin",
+      "links": []
+    },
+    "Karki 2018": {
+      "title": "Feasibility of school-based health education intervention to improve the compliance to mass drug administration for lymphatic Filariasis in Lalitpur district, Nepal: a mixed methods among students, teachers and health program manager",
+      "links": [
+        "https://doi.org/10.1371/journal.pone.0203547",
+        "https://www.ncbi.nlm.nih.gov/pubmed/30216390"
+      ]
+    },
+    "Kouassi 2018": {
+      "title": "Perceptions, knowledge, attitudes and practices for the prevention and control of lymphatic filariasis in Conakry, Republic of Guinea",
+      "links": [
+        "https://doi.org/10.1016/j.actatropica.2017.12.002",
+        "https://www.ncbi.nlm.nih.gov/pubmed/29224979"
+      ]
+    },
+    "Krentel 2015": {
+      "title": "Using stories to support mass drug administration for the elimination of lymphatic filariasis in Agam district and Depok city, Indonesia",
+      "links": []
+    },
+    "Krentel 2016": {
+      "title": "Improving coverage and compliance in mass drug administration for the elimination of LF in two 'endgame' districts in Indonesia using micronarrative surveys",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0005027",
+        "https://www.ncbi.nlm.nih.gov/pubmed/27812107"
+      ]
+    },
+    "Krentel 2018b": {
+      "title": "Acceptability of a triple drug regimen for elimination of lymphatic filariasis: results of a multicenter community based study",
+      "links": []
+    },
+    "Krentel 2019": {
+      "title": "Perceptions and reported severity of adverse events following treatment for lymphatic filariasis: results of a multicenter community based study",
+      "links": []
+    },
+    "Krentel 2020": {
+      "title": "Keeping communities at the centre of efforts to eliminate lymphatic filariasis: learning from the past to reach a future free of lymphatic filariasis",
+      "links": [
+        "https://doi.org/10.1093/inthealth/ihaa086",
+        "https://www.ncbi.nlm.nih.gov/pubmed/33349882"
+      ]
+    },
+    "Kyelem 2008": {
+      "title": "Determinants of success in national programs to eliminate lymphatic filariasis: a perspective identifying essential elements and research needs",
+      "links": [
+        "https://doi.org/10.4269/ajtmh.2008.79.480",
+        "https://www.ncbi.nlm.nih.gov/pubmed/18840733"
+      ]
+    },
+    "Lahariya 2008": {
+      "title": "Strengthening of mass drug administration implementation is required to eliminate lymphatic filariasis from India: an evaluation study",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/19248659"
+      ]
+    },
+    "Laveglia 2017": {
+      "title": "Barriers to control and eliminate lymphatic filariasis in Zanzibar: tackling the reality of the mass drug administration program",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/28829737"
+      ]
+    },
+    "Malecela 2009": {
+      "title": "The sharp end – experiences from the Tanzanian programme for the elimination of lymphatic filariasis: notes from the end of the road",
+      "links": [
+        "https://doi.org/10.1179/000349809X12502035776676",
+        "https://www.ncbi.nlm.nih.gov/pubmed/19843398"
+      ]
+    },
+    "Manyeh 2019": {
+      "title": "Using intervention mapping to design and implement quality improvement strategies towards elimination of lymphatic filariasis in Northern Ghana",
+      "links": [
+        "https://doi.org/10.1371/journal.pntd.0007267",
+        "https://www.ncbi.nlm.nih.gov/pubmed/30908495"
+      ]
+    },
+    "Meyrowitsch 2013": {
+      "title": "Factors influencing compliance to mass drug administration for control of lymphatic filariasis in Tanzania",
+      "links": []
+    },
+    "Mukhopadhyay 2008": {
+      "title": "Knowledge on lymphatic filariasis and mass drug administration (MDA) programme in filaria endemic districts of Andhra Pradesh, India",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/18399322"
+      ]
+    },
+    "Mwakitalu 2013": {
+      "title": "Urban lymphatic filariasis in the city of Tanga, Tanzania, after seven rounds of mass drug administration",
+      "links": [
+        "https://doi.org/10.1016/j.actatropica.2013.10.004",
+        "https://www.ncbi.nlm.nih.gov/pubmed/24135628"
+      ]
+    },
+    "Nair 2013": {
+      "title": "An exploratory study on factors influencing mass drug administration compliance (MDA) for elimination of lymphatic filariasis among people in selected areas under urban and rural PHC at Mangalore",
+      "links": []
+    },
+    "Njomo 2010": {
+      "title": "Socio-economic and behavioral factors that influence compliance with mass treatment in the national programme for elimination of lymphatic filariasis in Kenya",
+      "links": []
+    },
+    "Njomo 2012d": {
+      "title": "Socioeconomic factors associated with compliance with mass drug administration for lymphatic filariasis elimination in Kenya: descriptive study results",
+      "links": [
+        "https://doi.org/10.4103/1755-6783.95962"
+      ]
+    },
+    "Nuwaha 2004": {
+      "title": "Predictors for compliance with community directed ivermectin treatment in Bushenyi district of Uganda: qualitative results",
+      "links": [
+        "https://doi.org/10.4314/eamj.v81i2.9132",
+        "https://www.ncbi.nlm.nih.gov/pubmed/15125093"
+      ]
+    },
+    "Patanduk 2018": {
+      "title": "Stakeholder readiness of mass drugs administration of filariasis in Kodi Balaghar sub district, southwest Sumba district",
+      "links": [
+        "https://doi.org/10.22435/bpk.v46i2.98"
+      ]
+    },
+    "Ramaiah 2005": {
+      "title": "Situation analysis in a large urban area of India, prior to launching a programme of mass drug administrations to eliminate lymphatic filariasis",
+      "links": [
+        "https://doi.org/10.1179/136485905X29701",
+        "https://www.ncbi.nlm.nih.gov/pubmed/15829134"
+      ]
+    },
+    "Rath 2006": {
+      "title": "Knowledge and perceptions about lymphatic filariasis: a study during the programme to eliminate lymphatic filariasis in an urban community of Orissa, India",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/17322817"
+      ]
+    },
+    "Rudra 2012": {
+      "title": "MDA program as control strategy of lymphatic filariasis in a village of Bankura district, West Bengal, India",
+      "links": []
+    },
+    "Showkath 2008": {
+      "title": "Awareness of health personnel about lymphatic filariasis and mass drug administration in Kerala state",
+      "links": [
+        "https://www.ncbi.nlm.nih.gov/pubmed/19127667"
+      ]
+    },
+    "Silumbe 2015": {
+      "title": "A qualitative study of perceptions of a mass test and treat campaign in Southern Zambia and potential barriers to effectiveness",
+      "links": [
+        "https://doi.org/10.1186/s12936-015-0686-3",
+        "https://www.ncbi.nlm.nih.gov/pubmed/25896068"
+      ]
+    },
+    "Widjanarko 2018": {
+      "title": "Perceived threat and benefit toward community compliance of filariasis' mass drug administration in Pekalongan district, Indonesia",
+      "links": [
+        "https://doi.org/10.2147/RMHP.S172860",
+        "https://www.ncbi.nlm.nih.gov/pubmed/30464659"
+      ]
+    },
+    "Wodnik 2019": {
+      "title": "Declining mass drug administration coverage for lymphatic filariasis in Port-Au-Prince, Haiti: a programmatic case study and recommendations",
+      "links": []
+    }
+  }
+        </content>
+    </file>
+        </directory>
+            <directory name="scraped_references">
+            </directory>
+                <directory name="Ahorlu 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Ahorlu 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Amarillo 2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Amarillo 2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2003">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2003\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2004a">
+    <file>
+        <name>link_1.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2004a\link_1.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2004b">
+                </directory>
+                <directory name="Babu 2008">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Babu 2008\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Babu 2010">
+                </directory>
+                <directory name="Banerjee 2019">
+                </directory>
+                <directory name="Biritwum 2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Biritwum 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Cassidy 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Cassidy 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Gonzales 2019">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Gonzales 2019\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Hussain 2014">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Hussain 2014\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="King 2011">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\King 2011\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kisoka 2016">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kisoka 2016\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kisoka 2017">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Kisoka 2017\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2008">
+                </directory>
+                <directory name="Krentel 2012">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2012\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2018">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2018\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Krentel 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Krentel 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Kusi 2020">
+                </directory>
+                <directory name="Manyeh 2020">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Manyeh 2020\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Manyeh 2021">
+    <file>
+        <name>link_2.md</name>
+        <path>data\taylor_et_al\scraped_references\Manyeh 2021\link_2.md</path>
+        <content>Full content not provided</content>
+    </file>
+                </directory>
+                <directory name="Njomo 2012a">
+                </directory>
+                <directory name="Njomo 2012b">
+                </directory>
+    <directory name="paper_prepper">
+    <file>
+        <name>bibtex.py</name>
+        <path>paper_prepper\bibtex.py</path>
+        <content>
+# academic_claim_analyzer/search/bibtex.py
+
+import requests
+from typing import Optional
+
+def get_bibtex_from_doi(doi: str) -> Optional[str]:
+    """
+    Fetch BibTeX data for a given DOI using the Crossref API.
+    """
+    url = f"https://api.crossref.org/works/{doi}/transform/application/x-bibtex"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
+    return None
+
+def get_bibtex_from_title(title: str, authors: list, year: int) -> Optional[str]:
+    """
+    Search for a paper using its title, authors, and year, then fetch its BibTeX data using the Crossref API.
+    """
+    query = f"{title} {' '.join(authors)} {year}"
+    url = f"https://api.crossref.org/works?query={query}&rows=1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data['message']['items']:
+            doi = data['message']['items'][0].get('DOI')
+            if doi:
+                return get_bibtex_from_doi(doi)
+    return None
+
+# Test with main code
+def main():
+    # Example 1: Get BibTeX from DOI
+    doi = "10.1016/j.ifacol.2020.12.237"
+    bibtex_from_doi = get_bibtex_from_doi(doi)
+    print("BibTeX from DOI:")
+    print(bibtex_from_doi)
+    print("\n")
+
+    # Example 2: Get BibTeX from title, authors, and year
+    title = "Optimal control of greenhouse climate using PID and MPC algorithms"
+    authors = ["Hasni", "A.", "Taibi", "R.", "Draoui", "B.", "Boulard", "T."]
+    year = 2020
+    bibtex_from_title = get_bibtex_from_title(title, authors, year)
+    print("BibTeX from title, authors, and year:")
+    print(bibtex_from_title)
+
+if __name__ == "__main__":
+    main()
+        </content>
+    </file>
+    <file>
+        <name>bibtex_to_apa.py</name>
+        <path>paper_prepper\bibtex_to_apa.py</path>
+        <content>
+import bibtexparser
+import re
+import os
+from unidecode import unidecode
+
+def clean_text(text):
+    text = unidecode(text)
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[\{\}]', '', text)
+    return text.strip()
+
+def format_authors(authors, max_authors=7):
+    author_list = [a.strip() for a in re.split(r'\s+and\s+', authors)]
+    formatted_authors = []
+    for author in author_list:
+        names = author.split(',')
+        if len(names) == 2:
+            last_name = names[0].strip()
+            first_names = names[1].strip()
+            initials = ''.join(name[0].upper() + '.' for name in first_names.split() if name)
+            formatted_authors.append(f"{last_name}, {initials}")
+        else:
+            formatted_authors.append(author)
+    
+    if len(formatted_authors) > max_authors:
+        return ', '.join(formatted_authors[:6]) + ', et al.'
+    elif len(formatted_authors) > 1:
+        return ', '.join(formatted_authors[:-1]) + ', & ' + formatted_authors[-1]
+    else:
+        return formatted_authors[0]
+
+def format_title(title):
+    title = clean_text(title)
+    return title[0].upper() + title[1:].lower()
+
+def format_journal(journal):
+    journal = clean_text(journal)
+    return ' '.join(word.capitalize() for word in journal.split())
+
+def format_pages(pages):
+    return pages.replace('--', '-')
+
+def format_doi(doi):
+    return f"https://doi.org/{doi}" if doi else ''
+
+def get_sort_key(entry):
+    authors = entry.get('author', '')
+    if not authors:
+        return ('', entry.get('year', '9999'), entry.get('title', ''))
+    first_author = authors.split(' and ')[0]
+    last_name = first_author.split(',')[0] if ',' in first_author else first_author.split()[-1]
+    return (last_name.lower(), entry.get('year', ''), entry.get('title', ''))
+
+def convert_to_apa(input_file, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    base_name = os.path.splitext(os.path.basename(input_file))[0]
+    output_file = os.path.join(output_dir, f"{base_name}_apa.txt")
+
+    with open(input_file, 'r', encoding='utf-8') as bibtex_file:
+        parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+        bib_database = bibtexparser.load(bibtex_file, parser=parser)
+
+    sorted_entries = sorted(bib_database.entries, key=get_sort_key)
+
+    with open(output_file, 'w', encoding='utf-8') as apa_file:
+        for entry in sorted_entries:
+            authors = format_authors(clean_text(entry.get('author', '')))
+            year = entry.get('year', 'n.d.')
+            title = format_title(entry.get('title', ''))
+            journal = format_journal(entry.get('journal', entry.get('booktitle', '')))
+            volume = entry.get('volume', '')
+            number = entry.get('number', '')
+            pages = format_pages(entry.get('pages', ''))
+            doi = format_doi(entry.get('doi', ''))
+
+            if not authors:
+                authors = "Unknown Author"
+
+            citation = f"{authors} ({year}). {title}. "
+            
+            if journal:
+                citation += f"{journal}"
+                if volume:
+                    citation += f", {volume}"
+                    if number:
+                        citation += f"({number})"
+                if pages:
+                    citation += f", {pages}"
+            citation += "."
+            
+            if doi:
+                citation += f" {doi}"
+            
+            apa_file.write(citation + "\n")
+
+    print(f"APA citations have been written to {output_file}")
+
+if __name__ == "__main__":
+    input_file = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10\My Library.bib"
+    output_dir = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft10"
+    convert_to_apa(input_file, output_dir)
+        </content>
+    </file>
+    <file>
+        <name>reference_processor.py</name>
+        <path>paper_prepper\reference_processor.py</path>
+        <content>
+# paper_prepper/reference_processor.py
+
+import os
+import json
+import shutil
+from scraper import UnifiedWebScraper
+import asyncio
+import aiohttp
+
+class ReferenceProcessor:
+    def __init__(self, data_dir):
+        self.data_dir = data_dir
+
+    async def process_references(self, source_paper_name):
+        source_paper_dir = os.path.join(self.data_dir, source_paper_name)
+        json_file = os.path.join(source_paper_dir, "references.json")
+
+        if not os.path.exists(json_file):
+            raise FileNotFoundError(f"references.json not found in {source_paper_dir}")
+
+        with open(json_file, "r") as f:
+            references = json.load(f)
+
+        scraped_dir = os.path.join(source_paper_dir, "scraped_references")
+        os.makedirs(scraped_dir, exist_ok=True)
+
+        async with aiohttp.ClientSession() as session:
+            scraper = UnifiedWebScraper(session=session)
+            await scraper.initialize()
+
+            for ref_name, ref_data in references.items():
+                ref_dir = os.path.join(scraped_dir, ref_name)
+                os.makedirs(ref_dir, exist_ok=True)
+
+                for i, link in enumerate(ref_data["links"]):
+                    content = await scraper.scrape(link)
+                    with open(os.path.join(ref_dir, f"link_{i+1}.md"), "w", encoding="utf-8") as f:
+                        f.write(content)
+
+                # Find the largest markdown file for this reference
+                largest_file = max(
+                    (os.path.join(ref_dir, f) for f in os.listdir(ref_dir) if f.endswith('.md')),
+                    key=os.path.getsize
+                )
+
+                # Move the largest file to the source paper directory
+                shutil.move(largest_file, os.path.join(source_paper_dir, f"{ref_name}_full.md"))
+
+            await scraper.close()
+
+        print(f"Finished processing references for {source_paper_name}")
+
+async def main():
+    processor = ReferenceProcessor("data")
+    
+    while True:
+        source_paper_name = "taylor_et_al"
+
+        try:
+            await processor.process_references(source_paper_name)
+        except FileNotFoundError as e:
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        
+        print("\n")  # Add a blank line for readability between runs
+
+if __name__ == "__main__":
+    asyncio.run(main())
+        </content>
+    </file>
+    <file>
+        <name>sample_paper_analyzer.py</name>
+        <path>paper_prepper\sample_paper_analyzer.py</path>
+        <content>
+import asyncio
+import json
+import os
+import logging
+from typing import List, Dict
+from async_llm_handler import Handler
+from bibtex import get_bibtex_from_title
+import time
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Rate limiting settings
+MAX_REQUESTS_PER_MINUTE = 25
+REQUEST_INTERVAL = 60 / MAX_REQUESTS_PER_MINUTE
+
+async def load_text_file(file_path: str) -> str:
+    logger.info(f"Loading text file: {file_path}")
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        logger.debug(f"Successfully loaded {len(content)} characters from {file_path}")
+        return content
+    except Exception as e:
+        logger.error(f"Error loading file {file_path}: {str(e)}")
+        raise
+
+async def analyze_reference(handler: Handler, source_text: str, reference_text: str, reference_file: str) -> Dict:
+    logger.info(f"Analyzing reference: {reference_file}")
+    
+    prompt = f"""
+    Analyze the provided source text and reference text to determine if the reference should be cited. 
+    Return a JSON object with the following structure:
+
+    {{
+        "title": "Paper title",
+        "authors": ["Author 1", "Author 2"],
+        "year": YYYY,
+        "doi": "DOI if available",
+        "analysis": {{
+            "include": 0 or 1,
+            "section": "Section name",
+            "paragraph": "First 5 words of the paragraph",
+            "after_line": "First 5 words of the line",
+            "explanation": "Detailed explanation of why this paper should be included, where it fits in the review, and what point it supports"
+        }},
+        "relevant_quotes": [
+            "Quote 1",
+            "Quote 2",
+            "Quote 3"
+        ],
+        "bibtex": "BibTeX entry"
+    }}
+    
+    Here is what a good acceptance might look like:
+    
+        {{
+    "title": "Machine Learning Approaches for IoT Security: A Comprehensive Survey",
+    "authors": ["John Doe", "Jane Smith"],
+    "year": 2022,
+    "doi": "10.1234/example.doi.2022",
+    "analysis": {{
+        "include": 1,
+        "section": "Security Challenges in IoT",
+        "paragraph": "One of the primary concerns",
+        "after_line": "Various security threats in IoT",
+        "explanation": "This paper should be included in the review as it provides a comprehensive survey of machine learning approaches specifically tailored for IoT security. It fits well in the 'Security Challenges in IoT' section, supporting the point that machine learning can be effectively used to address various security threats in IoT systems. The paper's findings on the effectiveness of different ML algorithms for threat detection and prevention would significantly strengthen our argument about the importance of advanced security measures in IoT environments."
+    }},
+    "relevant_quotes": [
+        "Our survey reveals that supervised learning techniques, particularly deep learning models, show promising results in detecting and classifying IoT security threats.",
+        "The study found that ensemble methods combining multiple ML algorithms outperform single-algorithm approaches in IoT intrusion detection systems.",
+        "Despite the advantages, the survey highlights challenges in implementing ML-based security solutions in resource-constrained IoT devices, emphasizing the need for lightweight algorithms."
+    ],
+    "bibtex": "@article{{doe2022machine,\n  title={{Machine Learning Approaches for IoT Security: A Comprehensive Survey}},\n  author={{Doe, John and Smith, Jane}},\n  journal={{Journal of IoT Security}},\n  year={{2022}},\n  publisher={{Example Publisher}}\n}}"
+    }}
+    
+    And here is what a good rejection might look like:
+    
+        {{
+    "title": "Energy-Efficient Machine Learning Algorithms for IoT Devices",
+    "authors": null,
+    "year": null,
+    "doi": null,
+    "analysis": {{
+        "include": 0,
+        "section": "IoT and Machine Learning Integration",
+        "paragraph": "Challenges in implementing ML on",
+        "after_line": "Resource constraints of IoT devices",
+        "explanation": "While this paper presents interesting research on energy-efficient machine learning algorithms for IoT devices, it doesn't quite meet the threshold for inclusion in our review. The paper addresses an important aspect of IoT and ML integration - the energy efficiency of ML algorithms on resource-constrained devices. However, our review already covers this topic sufficiently in the 'Challenges in implementing ML on IoT devices' subsection. 
+
+        The paper's main contributions - a new lightweight neural network architecture and an energy-aware training method - are noteworthy, but they don't provide a significant enough advancement or novel perspective to warrant inclusion in our already comprehensive review. The energy savings reported (15-20%) are modest and in line with what we've already discussed from other sources.
+
+        Furthermore, the paper's focus is quite narrow, dealing specifically with energy efficiency in ML algorithms, while our review aims to provide a broader overview of IoT and ML integration challenges and solutions. Including this paper might skew the balance of our review towards energy efficiency at the expense of other equally important aspects.
+
+        In summary, while the paper is of good quality and relevant to our topic, its contributions are not sufficiently novel or impactful to justify expanding our already well-rounded review. It would be more appropriate to reference this work in a more specialized survey focusing specifically on energy efficiency in IoT-based machine learning systems."
+    }},
+    "relevant_quotes": null,
+    "bibtex": null
+    }}
+    
+    It is just as important to reject references as it is to accept them.
+
+    Instructions:
+    1. Be extremely selective about including references. The default decision should be to reject unless the reference adds substantial, novel information to the source text.
+    2. If you decide not to include the reference (analysis.include = 0), set ALL fields except "title" and "analysis" to null. This includes authors, year, doi, relevant_quotes, and bibtex.
+    3. The analysis field should always be filled, regardless of the inclusion decision.
+    4. If including the reference, provide exactly 3 relevant quotes from the reference text to support its inclusion.
+    5. In the analysis, clearly state the section, paragraph (first 5 words), and line (first 5 words) where the reference should be inserted.
+    6. In the explanation, provide a detailed rationale for including the paper, specifying where it fits in the review and what point it supports.
+
+    Your task is to enhance the source text with only the most pertinent and impactful references. Reject any reference that doesn't significantly strengthen or expand upon the source text's content.
+
+    Source text:
+    {source_text}
+
+    Reference text:
+    {reference_text}
+    """
+
+    try:
+        response = await handler.query(prompt, model="gpt_4o_mini", json_mode=True)
+        result = json.loads(response)
+        logger.debug(f"Successfully analyzed reference: {reference_file}")
+    except Exception as e:
+        logger.error(f"Error analyzing reference {reference_file}: {str(e)}")
+        return None
+
+    if result['analysis']['include'] == 0:
+        logger.info(f"Reference rejected: {reference_file}")
+        result = {
+            "title": result.get('title'),
+            "authors": None,
+            "year": None,
+            "doi": None,
+            "analysis": result['analysis'],
+            "relevant_quotes": None,
+            "bibtex": None
+        }
+    elif result.get('title') and result.get('authors') and result.get('year'):
+        logger.info(f"Reference accepted: {reference_file}")
+        try:
+            result['bibtex'] = get_bibtex_from_title(result['title'], result['authors'], result['year'])
+        except Exception as e:
+            logger.warning(f"Failed to generate BibTeX for {result['title']}: {str(e)}")
+    
+    return result
+
+async def process_references(source_file: str, reference_folder: str, output_file: str):
+    logger.info("Starting reference processing")
+    handler = Handler()
+    
+    try:
+        source_text = await load_text_file(source_file)
+    except Exception as e:
+        logger.error(f"Failed to load source text. Aborting process. Error: {str(e)}")
+        return
+
+    reference_files = [f for f in os.listdir(reference_folder) if f.endswith('.txt')]
+    logger.info(f"Found {len(reference_files)} reference files to process")
+
+    results = []
+    for ref_file in reference_files:
+        ref_path = os.path.join(reference_folder, ref_file)
+        try:
+            ref_text = await load_text_file(ref_path)
+            result = await analyze_reference(handler, source_text, ref_text, ref_file)
+            if result is not None:
+                results.append(result)
+            await asyncio.sleep(REQUEST_INTERVAL)  # Rate limiting
+        except Exception as e:
+            logger.error(f"Error processing reference file {ref_file}: {str(e)}")
+
+    accepted_results = [result for result in results if result['analysis']['include'] == 1]
+    logger.info(f"Accepted {len(accepted_results)} out of {len(results)} references")
+
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(accepted_results, f, indent=2, ensure_ascii=False)
+        logger.info(f"Results written to {output_file}")
+    except Exception as e:
+        logger.error(f"Error writing results to {output_file}: {str(e)}")
+
+if __name__ == "__main__":
+    source_file = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft7\full_papers\source_text.txt.txt"
+    reference_folder = r"C:\Users\bnsoh2\OneDrive - University of Nebraska-Lincoln\Projects\Students\Bryan Nsoh\Papers\Real-Time-IoT-ML\Draft7\full_papers"
+    output_file = os.path.join(reference_folder, "citation_analysis.json")
+
+    logger.info("Citation analyzer started")
+    asyncio.run(process_references(source_file, reference_folder, output_file))
+    logger.info("Citation analyzer finished")
+        </content>
+    </file>
+    <file>
+        <name>scraper.py</name>
+        <path>paper_prepper\scraper.py</path>
+        <content>
+import os
+import re
+import asyncio
+import random
+import aiohttp
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from fake_useragent import UserAgent
+import logging
+import sys
+import json
+import fitz  # PyMuPDF
+from bs4 import BeautifulSoup
+import requests
+from urllib.parse import urlparse
+from markdownify import markdownify as md
+
+class UnifiedWebScraper:
+    def __init__(self, session, max_concurrent_tasks=5):
+        self.semaphore = asyncio.Semaphore(max_concurrent_tasks)
+        self.user_agent = UserAgent()
+        self.browser = None
+        self.session = session
+        self.logger = logging.getLogger(__name__)
+
+    async def initialize(self):
+        try:
+            playwright = await async_playwright().start()
+            self.browser = await playwright.chromium.launch(headless=True)
+            self.logger.info("Browser initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize browser: {str(e)}")
+            raise
+
+    async def close(self):
+        if self.browser:
+            await self.browser.close()
+            self.logger.info("Browser closed")
+
+    def normalize_url(self, url):
+        if url.startswith("10.") or url.startswith("doi:"):
+            return f"https://doi.org/{url.replace('doi:', '')}"
+        parsed = urlparse(url)
+        if not parsed.scheme:
+            return f"http://{url}"
+        return url
+
+    async def scrape(self, url, min_words=700, max_retries=3):
+        normalized_url = self.normalize_url(url)
+        self.logger.info(f"Attempting to scrape URL: {normalized_url}")
+
+        scraping_methods = [
+            self.scrape_with_requests,
+            self.scrape_with_playwright
+        ]
+
+        if normalized_url.lower().endswith('.pdf'):
+            scraping_methods.append(self.scrape_pdf)
+
+        best_result = ("", 0)
+        for method in scraping_methods:
+            self.logger.info(f"Trying method: {method.__name__}")
+            for attempt in range(max_retries):
+                try:
+                    self.logger.info(f"Attempt {attempt + 1} with {method.__name__}")
+                    content = await method(normalized_url)
+                    word_count = len(content.split())
+                    self.logger.info(f"Got {word_count} words from {method.__name__}")
+                    if word_count > best_result[1]:
+                        best_result = (content, word_count)
+                    if word_count >= min_words:
+                        self.logger.info(f"Successfully scraped URL: {normalized_url}")
+                        return content
+                except Exception as e:
+                    self.logger.error(f"Error in {method.__name__} (attempt {attempt + 1}): {str(e)}")
+                if attempt < max_retries - 1:
+                    wait_time = random.uniform(1, 3)
+                    self.logger.info(f"Waiting {wait_time:.2f} seconds before next attempt")
+                    await asyncio.sleep(wait_time)
+
+        self.logger.warning(f"Failed to meet minimum word count for URL: {normalized_url}")
+        return best_result[0]
+
+    async def scrape_with_requests(self, url):
+        self.logger.info(f"Scraping with requests: {url}")
+        response = requests.get(url, headers={"User-Agent": self.user_agent.random})
+        if response.status_code == 200:
+            return md(response.text)
+        return ""
+
+    async def scrape_with_playwright(self, url):
+        self.logger.info(f"Scraping with Playwright: {url}")
+        if not self.browser:
+            await self.initialize()
+        context = await self.browser.new_context(
+            user_agent=self.user_agent.random,
+            viewport={"width": 1920, "height": 1080},
+            ignore_https_errors=True,
+        )
+        page = await context.new_page()
+        try:
+            await page.goto(url, wait_until="networkidle", timeout=15000)
+            content = await page.content()
+            return md(content)
+        except PlaywrightTimeoutError:
+            self.logger.warning(f"Timeout occurred while loading {url}")
+            return ""
+        finally:
+            await page.close()
+
+    async def scrape_pdf(self, url):
+        self.logger.info(f"Scraping PDF: {url}")
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                pdf_bytes = await response.read()
+                return self.extract_text_from_pdf(pdf_bytes)
+        return ""
+
+    def extract_text_from_pdf(self, pdf_bytes):
+        try:
+            document = fitz.open("pdf", pdf_bytes)
+            text = ""
+            for page in document:
+                text += page.get_text()
+            return text.strip()
+        except Exception as e:
+            self.logger.error(f"Failed to extract text from PDF. Error: {str(e)}")
+            return ""
+
+def sanitize_filename(url):
+    # Remove the protocol and www. if present
+    url = re.sub(r'^https?://(www\.)?', '', url)
+    # Replace non-alphanumeric characters with underscores
+    filename = re.sub(r'[^\w\-_\.]', '_', url)
+    # Truncate if too long (max 255 characters for most file systems)
+    return filename[:255] + '.md'
+
+async def main():
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logging.basicConfig(
+        level=logging.INFO,
+        format=log_format,
+        handlers=[
+            logging.FileHandler("scraper.log"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+
+    output_folder = r"C:\Users\bnsoh2\Desktop\test"
+    os.makedirs(output_folder, exist_ok=True)
+
+    async with aiohttp.ClientSession() as session:
+        scraper = UnifiedWebScraper(session=session)
+        try:
+            await scraper.initialize()
+        except Exception as e:
+            logging.error(f"Initialization failed: {e}")
+            return
+
+        urls = [
+            "10.1016/j.ifacol.2020.12.237",
+            "10.1016/j.agwat.2023.108536",
+            "10.1016/j.atech.2023.100251",
+            "10.1016/j.atech.2023.100179",
+            "10.1016/j.ifacol.2023.10.677",
+            "10.1016/j.ifacol.2023.10.1655",
+            "10.1016/j.ifacol.2023.10.667",
+            "10.1002/cjce.24764",
+            "10.3390/app13084734",
+            "10.1016/j.atech.2022.100074",
+            "10.1007/s10668-023-04028-9",
+            "10.1109/IJCNN54540.2023.10191862",
+            "10.1201/9780429290152-5",
+            "10.1016/j.jprocont.2022.10.003",
+            "10.1016/j.rser.2022.112790",
+            "10.1007/s11269-022-03191-4",
+            "10.3390/app12094235",
+            "10.3390/w14060889",
+            "10.3390/su14031304",
+        ]
+
+        success_count = 0
+        failure_count = 0
+
+        for url in urls:
+            try:
+                content = await scraper.scrape(url)
+                word_count = len(content.split())
+                
+                normalized_url = scraper.normalize_url(url)
+                filename = sanitize_filename(normalized_url)
+                file_path = os.path.join(output_folder, filename)
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                if word_count >= 700:
+                    print(f"\nURL: {url}\nStatus: Success\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
+                    success_count += 1
+                else:
+                    print(f"\nURL: {url}\nStatus: Failure (insufficient words)\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
+                    failure_count += 1
+            
+            except Exception as e:
+                print(f"\nURL: {url}\nStatus: Error\nError message: {str(e)}\n" + "-" * 80)
+                failure_count += 1
+
+        print("\nSummary:\n" + "=" * 80)
+        print(f"Total URLs scraped: {len(urls)}")
+        print(f"Successful scrapes: {success_count}")
+        print(f"Failed scrapes: {failure_count}")
+        print(f"Results saved in: {output_folder}")
+
+        await scraper.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+        </content>
+    </file>
+    <file>
+        <name>test_pdf_download.py</name>
+        <path>paper_prepper\test_pdf_download.py</path>
+        <content>
+import requests
+import os
+
+def download_pdf(url, output_path):
+    # Send a GET request to the URL
+    response = requests.get(url)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Get the content type from the headers
+        content_type = response.headers.get('Content-Type', '').lower()
+        
+        # Check if the content is a PDF
+        if 'application/pdf' in content_type:
+            # Write the content to a file
+            with open(output_path, 'wb') as f:
+                f.write(response.content)
+            print(f"PDF downloaded successfully: {output_path}")
+        else:
+            print("The URL does not point to a PDF file.")
+    else:
+        print(f"Failed to download. Status code: {response.status_code}")
+
+# Example usage
+url = "https://www.jstage.jst.go.jp/article/jnsv/66/Supplement/66_S18/_pdf"
+output_path = os.path.join(os.getcwd(), "downloaded_paper.pdf")
+
+download_pdf(url, output_path)
+        </content>
+    </file>
+    </directory>
+</repository_structure>
