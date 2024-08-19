@@ -6,3 +6,9 @@ fake-useragent
 markdownify 
 requests
 chardet
+openai
+python-dotenv
+pydantic
+bibtexparser
+pytest
+pytest-asyncio
