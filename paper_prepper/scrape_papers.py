@@ -4,7 +4,7 @@ import os
 import json
 import shutil
 import logging
-from scraper import UnifiedWebScraper
+from utils.scraper import UnifiedWebScraper
 import asyncio
 import aiohttp
 from utils.file_utils import read_file, write_file

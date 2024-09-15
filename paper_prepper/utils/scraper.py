@@ -3,6 +3,7 @@ import re
 import asyncio
 import random
 import aiohttp
+from aiohttp import ClientTimeout
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 from fake_useragent import UserAgent
 import logging
@@ -10,31 +11,37 @@ import sys
 import json
 import fitz  # PyMuPDF
 from bs4 import BeautifulSoup
-import requests
 from urllib.parse import urlparse
-from markdownify import markdownify as md
+import pyperclip
+import time
+from aiohttp_retry import RetryClient, ExponentialRetry
 
 class UnifiedWebScraper:
-    def __init__(self, session, max_concurrent_tasks=5):
+    def __init__(self, session, max_concurrent_tasks=10, initial_timeout=15):
         self.semaphore = asyncio.Semaphore(max_concurrent_tasks)
         self.user_agent = UserAgent()
         self.browser = None
         self.session = session
         self.logger = logging.getLogger(__name__)
+        self.failed_urls = []
+        self.initial_timeout = initial_timeout
 
     async def initialize(self):
         try:
-            playwright = await async_playwright().start()
-            self.browser = await playwright.chromium.launch(headless=True)
-            self.logger.info("Browser initialized successfully")
+            self.playwright = await async_playwright().start()
+            self.browser = await self.playwright.chromium.launch(headless=True)
+            self.logger.info("Playwright browser initialized successfully")
         except Exception as e:
-            self.logger.error(f"Failed to initialize browser: {str(e)}")
+            self.logger.error(f"Failed to initialize Playwright browser: {str(e)}")
             raise
 
     async def close(self):
         if self.browser:
             await self.browser.close()
-            self.logger.info("Browser closed")
+            self.logger.info("Playwright browser closed")
+        if self.playwright:
+            await self.playwright.stop()
+            self.logger.info("Playwright stopped")
 
     def normalize_url(self, url):
         if url.startswith("10.") or url.startswith("doi:"):
@@ -46,51 +53,91 @@ class UnifiedWebScraper:
 
     async def scrape(self, url, min_words=700, max_retries=3):
         normalized_url = self.normalize_url(url)
-        self.logger.info(f"Attempting to scrape URL: {normalized_url}")
+        self.logger.info(f"Starting scrape for URL: {normalized_url}")
 
-        scraping_methods = [
-            self.scrape_with_requests,
-            self.scrape_with_playwright
-        ]
-
-        if normalized_url.lower().endswith('.pdf'):
-            scraping_methods.append(self.scrape_pdf)
-
-        best_result = ("", 0)
-        for method in scraping_methods:
-            self.logger.info(f"Trying method: {method.__name__}")
-            for attempt in range(max_retries):
+        async with self.semaphore:
+            for attempt in range(1, max_retries + 1):
+                timeout = self.initial_timeout * attempt  # Dynamic timeout
                 try:
-                    self.logger.info(f"Attempt {attempt + 1} with {method.__name__}")
-                    content = await method(normalized_url)
+                    self.logger.info(f"Attempt {attempt} using aiohttp for URL: {normalized_url}")
+                    content = await self.scrape_with_aiohttp(normalized_url, timeout)
                     word_count = len(content.split())
-                    self.logger.info(f"Got {word_count} words from {method.__name__}")
-                    if word_count > best_result[1]:
-                        best_result = (content, word_count)
+                    self.logger.info(f"aiohttp returned {word_count} words for URL: {normalized_url}")
                     if word_count >= min_words:
-                        self.logger.info(f"Successfully scraped URL: {normalized_url}")
+                        self.logger.info(f"Successfully scraped URL: {normalized_url} using aiohttp")
                         return content
+                    else:
+                        self.logger.warning(f"Scraped content below threshold for URL: {normalized_url} using aiohttp")
                 except Exception as e:
-                    self.logger.error(f"Error in {method.__name__} (attempt {attempt + 1}): {str(e)}")
-                if attempt < max_retries - 1:
-                    wait_time = random.uniform(1, 3)
-                    self.logger.info(f"Waiting {wait_time:.2f} seconds before next attempt")
+                    self.logger.error(f"Error in scrape_with_aiohttp (attempt {attempt}) for URL: {normalized_url}: {str(e)}")
+
+                if attempt < max_retries:
+                    wait_time = random.uniform(1, 3) * attempt  # Exponential backoff
+                    self.logger.info(f"Waiting for {wait_time:.2f} seconds before retrying aiohttp...")
                     await asyncio.sleep(wait_time)
 
-        self.logger.warning(f"Failed to meet minimum word count for URL: {normalized_url}")
-        return best_result[0]
+            # If aiohttp fails, try Playwright
+            for attempt in range(1, max_retries + 1):
+                timeout = self.initial_timeout * attempt  # Dynamic timeout
+                try:
+                    self.logger.info(f"Attempt {attempt} using Playwright for URL: {normalized_url}")
+                    content = await self.scrape_with_playwright(normalized_url, timeout)
+                    word_count = len(content.split())
+                    self.logger.info(f"Playwright returned {word_count} words for URL: {normalized_url}")
+                    if word_count >= min_words:
+                        self.logger.info(f"Successfully scraped URL: {normalized_url} using Playwright")
+                        return content
+                    else:
+                        self.logger.warning(f"Scraped content below threshold for URL: {normalized_url} using Playwright")
+                except Exception as e:
+                    self.logger.error(f"Error in scrape_with_playwright (attempt {attempt}) for URL: {normalized_url}: {str(e)}")
 
-    async def scrape_with_requests(self, url):
-        self.logger.info(f"Scraping with requests: {url}")
-        response = requests.get(url, headers={"User-Agent": self.user_agent.random})
-        if response.status_code == 200:
-            return md(response.text)
-        return ""
+                if attempt < max_retries:
+                    wait_time = random.uniform(1, 3) * attempt  # Exponential backoff
+                    self.logger.info(f"Waiting for {wait_time:.2f} seconds before retrying Playwright...")
+                    await asyncio.sleep(wait_time)
 
-    async def scrape_with_playwright(self, url):
-        self.logger.info(f"Scraping with Playwright: {url}")
-        if not self.browser:
-            await self.initialize()
+            # If all previous methods fail, try headful Playwright as a last resort
+            self.logger.info(f"Attempting headful Playwright for URL: {normalized_url}")
+            try:
+                content = await self.scrape_with_headful_playwright(normalized_url, timeout * 2)  # Double timeout for headful
+                word_count = len(content.split())
+                self.logger.info(f"Headful Playwright returned {word_count} words for URL: {normalized_url}")
+                if word_count >= min_words:
+                    self.logger.info(f"Successfully scraped URL: {normalized_url} using headful Playwright")
+                    return content
+                else:
+                    self.logger.warning(f"Scraped content below threshold for URL: {normalized_url} using headful Playwright")
+            except Exception as e:
+                self.logger.error(f"Error in scrape_with_headful_playwright for URL: {normalized_url}: {str(e)}")
+
+            self.logger.warning(f"Failed to scrape URL: {normalized_url} after all attempts")
+            self.failed_urls.append(normalized_url)
+            return ""
+
+    async def scrape_with_aiohttp(self, url, timeout):
+        headers = {"User-Agent": self.user_agent.random}
+        retry_options = ExponentialRetry(attempts=3)
+        async with RetryClient(retry_options=retry_options) as client:
+            try:
+                async with client.get(url, headers=headers, timeout=ClientTimeout(total=timeout)) as response:
+                    if response.status == 200:
+                        content_type = response.headers.get('Content-Type', '').lower()
+                        if 'application/pdf' in content_type or url.lower().endswith('.pdf'):
+                            self.logger.info(f"Detected PDF content for URL: {url}")
+                            pdf_bytes = await response.read()
+                            return self.extract_text_from_pdf(pdf_bytes)
+                        else:
+                            text = await response.text()
+                            return self.extract_text_from_html(text)
+                    else:
+                        self.logger.warning(f"Received status code {response.status} for URL: {url}")
+                        return ""
+            except Exception as e:
+                self.logger.error(f"aiohttp request failed for URL: {url} with error: {str(e)}")
+                raise
+
+    async def scrape_with_playwright(self, url, timeout):
         context = await self.browser.new_context(
             user_agent=self.user_agent.random,
             viewport={"width": 1920, "height": 1080},
@@ -98,41 +145,230 @@ class UnifiedWebScraper:
         )
         page = await context.new_page()
         try:
-            await page.goto(url, wait_until="networkidle", timeout=15000)
+            await page.goto(url, wait_until="networkidle", timeout=timeout * 1000)
+            
+            # Handle cookie consent popups
+            await self.handle_cookie_consent(page)
+            
             content = await page.content()
-            return md(content)
-        except PlaywrightTimeoutError:
-            self.logger.warning(f"Timeout occurred while loading {url}")
-            return ""
-        finally:
             await page.close()
+            await context.close()
 
-    async def scrape_pdf(self, url):
-        self.logger.info(f"Scraping PDF: {url}")
-        async with self.session.get(url) as response:
-            if response.status == 200:
-                pdf_bytes = await response.read()
+            # Check if content is PDF
+            if 'application/pdf' in page.url.lower() or url.lower().endswith('.pdf'):
+                self.logger.info(f"Playwright detected PDF content for URL: {url}")
+                pdf_bytes = await self.download_pdf(url)
                 return self.extract_text_from_pdf(pdf_bytes)
+
+            return self.extract_text_from_html(content)
+        except PlaywrightTimeoutError:
+            self.logger.warning(f"Playwright timeout for URL: {url}")
+            await page.close()
+            await context.close()
+            raise
+        except Exception as e:
+            self.logger.error(f"Playwright error for URL: {url}: {str(e)}")
+            await page.close()
+            await context.close()
+            raise
+
+    async def scrape_with_headful_playwright(self, url, timeout):
+        browser = await self.playwright.chromium.launch(headless=False)
+        context = await browser.new_context(
+            user_agent=self.user_agent.random,
+            viewport={"width": 1920, "height": 1080},
+            ignore_https_errors=True,
+        )
+        page = await context.new_page()
+        try:
+            await page.goto(url, wait_until="networkidle", timeout=timeout * 1000)
+            
+            # Handle cookie consent popups
+            await self.handle_cookie_consent(page)
+            
+            # Scroll to load all content
+            await self.scroll_page(page)
+            
+            # Try multiple selection strategies
+            content = await self.try_multiple_selections(page)
+            
+            await page.close()
+            await context.close()
+            await browser.close()
+
+            return content
+        except Exception as e:
+            self.logger.error(f"Headful Playwright error for URL: {url}: {str(e)}")
+            await page.close()
+            await context.close()
+            await browser.close()
+            raise
+
+    async def handle_cookie_consent(self, page):
+        # Add logic to detect and handle common cookie consent popups
+        consent_button_selectors = [
+            "button[id*='accept']",
+            "button[class*='accept']",
+            "a[id*='accept']",
+            "a[class*='accept']"
+        ]
+        for selector in consent_button_selectors:
+            try:
+                await page.click(selector, timeout=5000)
+                self.logger.info(f"Clicked cookie consent button with selector: {selector}")
+                await asyncio.sleep(1)  # Wait for any animations to complete
+                break
+            except:
+                pass
+
+    async def scroll_page(self, page):
+        await page.evaluate("""
+            async () => {
+                await new Promise((resolve) => {
+                    let totalHeight = 0;
+                    const distance = 100;
+                    const timer = setInterval(() => {
+                        const scrollHeight = document.body.scrollHeight;
+                        window.scrollBy(0, distance);
+                        totalHeight += distance;
+                        if(totalHeight >= scrollHeight){
+                            clearInterval(timer);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+        """)
+
+    async def try_multiple_selections(self, page):
+        selection_strategies = [
+            self.select_all_content,
+            self.select_by_main_content,
+            self.select_by_paragraphs
+        ]
+        
+        for strategy in selection_strategies:
+            content = await strategy(page)
+            if len(content.split()) > 100:  # Arbitrary threshold
+                return content
+        
         return ""
 
+    async def select_all_content(self, page):
+        await page.keyboard.press("Control+A")
+        await page.keyboard.press("Control+C")
+        return pyperclip.paste()
+
+    async def select_by_main_content(self, page):
+        main_content_selectors = ["main", "article", "#content", ".content"]
+        for selector in main_content_selectors:
+            try:
+                element = await page.query_selector(selector)
+                if element:
+                    return await element.inner_text()
+            except:
+                pass
+        return ""
+
+    async def select_by_paragraphs(self, page):
+        paragraphs = await page.query_selector_all("p")
+        text = ""
+        for p in paragraphs:
+            text += await p.inner_text() + "\n"
+        return text
+
+    async def download_pdf(self, url):
+        headers = {"User-Agent": self.user_agent.random}
+        async with self.session.get(url, headers=headers, timeout=ClientTimeout(total=self.initial_timeout)) as response:
+            if response.status == 200:
+                return await response.read()
+            else:
+                self.logger.warning(f"Failed to download PDF for URL: {url}")
+                return b""
+
     def extract_text_from_pdf(self, pdf_bytes):
+        self.logger.info("Extracting text from PDF")
         try:
-            document = fitz.open("pdf", pdf_bytes)
+            document = fitz.open(stream=pdf_bytes, filetype="pdf")
             text = ""
             for page in document:
                 text += page.get_text()
             return text.strip()
         except Exception as e:
-            self.logger.error(f"Failed to extract text from PDF. Error: {str(e)}")
+            self.logger.error(f"Failed to extract text from PDF: {str(e)}")
             return ""
 
-def sanitize_filename(url):
-    # Remove the protocol and www. if present
-    url = re.sub(r'^https?://(www\.)?', '', url)
-    # Replace non-alphanumeric characters with underscores
-    filename = re.sub(r'[^\w\-_\.]', '_', url)
-    # Truncate if too long (max 255 characters for most file systems)
-    return filename[:255] + '.md'
+    def extract_text_from_html(self, html_content):
+        self.logger.info("Extracting text from HTML")
+        try:
+            soup = BeautifulSoup(html_content, 'html.parser')
+            for script_or_style in soup(['script', 'style', 'nav', 'footer']):
+                script_or_style.decompose()
+            text = soup.get_text(separator=' ', strip=True)
+            return text
+        except Exception as e:
+            self.logger.error(f"Failed to extract text from HTML: {str(e)}")
+            return ""
+
+    def sanitize_filename(self, url):
+        url = re.sub(r'^https?://(www\.)?', '', url)
+        filename = re.sub(r'[^\w\-_\.]', '_', url)
+        return filename[:255] + '.txt'
+
+    def save_content(self, content, filename, output_folder):
+        try:
+            file_path = os.path.join(output_folder, filename)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            self.logger.info(f"Content saved to {file_path}")
+        except Exception as e:
+            self.logger.error(f"Failed to save content to {filename}: {str(e)}")
+
+    def save_failed_urls(self, output_folder):
+        if self.failed_urls:
+            failed_file = os.path.join(output_folder, 'failed_urls.json')
+            try:
+                with open(failed_file, 'w', encoding='utf-8') as f:
+                    json.dump(self.failed_urls, f, indent=4)
+                self.logger.info(f"Failed URLs saved to {failed_file}")
+            except Exception as e:
+                self.logger.error(f"Failed to save failed URLs: {str(e)}")
+
+    async def process_url(self, url, output_folder, min_words=700):
+        start_time = time.time()
+        content = await self.scrape(url, min_words=min_words)
+        end_time = time.time()
+        scraping_time = end_time - start_time
+        
+        word_count = len(content.split())
+        normalized_url = self.normalize_url(url)
+        filename = self.sanitize_filename(normalized_url)
+        self.save_content(content, filename, output_folder)
+
+        if word_count >= min_words:
+            self.logger.info(f"URL: {url} | Status: Success | Word count: {word_count} | Scraping time: {scraping_time:.2f}s | Saved as: {filename}")
+            print(f"\nURL: {url}\nStatus: Success\nWord count: {word_count}\nScraping time: {scraping_time:.2f}s\nSaved as: {filename}\n" + "-" * 80)
+            return True
+        else:
+            self.logger.warning(f"URL: {url} | Status: Failure (insufficient words) | Word count: {word_count} | Scraping time: {scraping_time:.2f}s | Saved as: {filename}")
+            print(f"\nURL: {url}\nStatus: Failure (insufficient words)\nWord count: {word_count}\nScraping time: {scraping_time:.2f}s\nSaved as: {filename}\n" + "-" * 80)
+            return False
+
+    async def run_scraper(self, urls, output_folder):
+        tasks = []
+        for url in urls:
+            task = asyncio.create_task(self.process_url(url, output_folder))
+            tasks.append(task)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        self.save_failed_urls(output_folder)
+        success_count = sum(1 for result in results if result is True)
+        failure_count = len(urls) - success_count
+        self.logger.info(f"Scraping completed. Total: {len(urls)}, Success: {success_count}, Failure: {failure_count}")
+        print("\nSummary:\n" + "=" * 80)
+        print(f"Total URLs scraped: {len(urls)}")
+        print(f"Successful scrapes: {success_count}")
+        print(f"Failed scrapes: {failure_count}")
+        print(f"Results saved in: {output_folder}")
 
 async def main():
     log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -140,76 +376,56 @@ async def main():
         level=logging.INFO,
         format=log_format,
         handlers=[
-            logging.FileHandler("scraper.log"),
+            logging.FileHandler("unified_scraper.log"),
             logging.StreamHandler(sys.stdout),
         ],
     )
+    logger = logging.getLogger(__name__)
 
-    output_folder = r"C:\Users\bnsoh2\Desktop\test"
+    output_folder = os.path.abspath("scraped_content")
     os.makedirs(output_folder, exist_ok=True)
+    logger.info(f"Output folder set to: {output_folder}")
+
+    failed_urls_file = os.path.join(output_folder, 'failed_urls.json')
+    if os.path.exists(failed_urls_file):
+        with open(failed_urls_file, 'r', encoding='utf-8') as f:
+            failed_urls = json.load(f)
+        logger.info(f"Loaded {len(failed_urls)} failed URLs from previous run")
+    else:
+        failed_urls = []
+
+    initial_urls = [
+        "https://doi.org/10.3390/agronomy13082113",
+        "https://doi.org/10.17159/wsa/2019.v45.i3.6750",
+        "https://doi.org/10.1049/cth2.12554",
+        "https://doi.org/10.3390/w14162457",
+        "https://doi.org/10.1136/bmj.p2739",
+        "https://doi.org/10.3390/su16093575",
+        "https://doi.org/10.1007/s11227-021-03914-1",
+        "https://doi.org/10.3390/agronomy13020342",
+        "https://doi.org/10.1109/jas.2021.1003925",
+        "https://doi.org/10.1029/2007WR006767",
+        "https://doi.org/10.1016/j.agwat.2024.108741",
+        "https://doi.org/10.1111/jac.12191",
+        "https://doi.org/10.1002/cft2.20217",
+        "https://doi.org/10.1111/j.1600-0047.2004.00296.x",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10638802/pdf/12884_2023_Article_6089.pdf",
+        "https://doi.org/10.17795/whb-34991",
+        "https://doi.org/10.1046/j.1523-536x.2000.00112.x",
+        "https://doi.org/10.1080/03630242.2022.2077508",
+    ]
+
+    all_urls = initial_urls + failed_urls
 
     async with aiohttp.ClientSession() as session:
-        scraper = UnifiedWebScraper(session=session)
+        scraper = UnifiedWebScraper(session=session, max_concurrent_tasks=10, initial_timeout=15)
         try:
             await scraper.initialize()
         except Exception as e:
-            logging.error(f"Initialization failed: {e}")
+            logger.error(f"Failed to initialize scraper: {str(e)}")
             return
 
-        urls = [
-            "10.1016/j.ifacol.2020.12.237",
-            "10.1016/j.agwat.2023.108536",
-            "10.1016/j.atech.2023.100251",
-            "10.1016/j.atech.2023.100179",
-            "10.1016/j.ifacol.2023.10.677",
-            "10.1016/j.ifacol.2023.10.1655",
-            "10.1016/j.ifacol.2023.10.667",
-            "10.1002/cjce.24764",
-            "10.3390/app13084734",
-            "10.1016/j.atech.2022.100074",
-            "10.1007/s10668-023-04028-9",
-            "10.1109/IJCNN54540.2023.10191862",
-            "10.1201/9780429290152-5",
-            "10.1016/j.jprocont.2022.10.003",
-            "10.1016/j.rser.2022.112790",
-            "10.1007/s11269-022-03191-4",
-            "10.3390/app12094235",
-            "10.3390/w14060889",
-            "10.3390/su14031304",
-        ]
-
-        success_count = 0
-        failure_count = 0
-
-        for url in urls:
-            try:
-                content = await scraper.scrape(url)
-                word_count = len(content.split())
-                
-                normalized_url = scraper.normalize_url(url)
-                filename = sanitize_filename(normalized_url)
-                file_path = os.path.join(output_folder, filename)
-                
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                
-                if word_count >= 700:
-                    print(f"\nURL: {url}\nStatus: Success\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
-                    success_count += 1
-                else:
-                    print(f"\nURL: {url}\nStatus: Failure (insufficient words)\nWord count: {word_count}\nSaved as: {filename}\n" + "-" * 80)
-                    failure_count += 1
-            
-            except Exception as e:
-                print(f"\nURL: {url}\nStatus: Error\nError message: {str(e)}\n" + "-" * 80)
-                failure_count += 1
-
-        print("\nSummary:\n" + "=" * 80)
-        print(f"Total URLs scraped: {len(urls)}")
-        print(f"Successful scrapes: {success_count}")
-        print(f"Failed scrapes: {failure_count}")
-        print(f"Results saved in: {output_folder}")
-
+        await scraper.run_scraper(all_urls, output_folder)
         await scraper.close()
 
 if __name__ == "__main__":

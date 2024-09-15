@@ -12,3 +12,4 @@ pydantic
 bibtexparser
 pytest
 pytest-asyncio
+unidecode
