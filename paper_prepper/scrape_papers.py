@@ -49,7 +49,7 @@ class ReferenceProcessor:
         os.makedirs(scraped_dir, exist_ok=True)
 
         async with aiohttp.ClientSession() as session:
-            scraper = UnifiedWebScraper(session=session, max_concurrent_tasks=5, initial_timeout=30)
+            scraper = UnifiedWebScraper(session=session, max_concurrent_tasks=1, initial_timeout=30)
             await scraper.initialize()
 
             async def process_reference(ref_name, ref_data):

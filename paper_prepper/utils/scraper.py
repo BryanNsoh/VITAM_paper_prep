@@ -4,7 +4,7 @@ import asyncio
 import random
 import aiohttp
 from aiohttp import ClientTimeout
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from undetected_playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 from fake_useragent import UserAgent
 import logging
 import sys
@@ -15,6 +15,7 @@ from urllib.parse import urlparse, urljoin
 import pyperclip
 import time
 from aiohttp_retry import RetryClient, ExponentialRetry
+from playwright_stealth import stealth_async
 
 class UnifiedWebScraper:
     def __init__(self, session, max_concurrent_tasks=10, initial_timeout=15, log_dir="scraper_logs"):
@@ -48,7 +49,8 @@ class UnifiedWebScraper:
     async def initialize(self):
         try:
             self.playwright = await async_playwright().start()
-            self.browser = await self.playwright.chromium.launch(headless=True)
+            args = ["--disable-blink-features=AutomationControlled"]
+            self.browser = await self.playwright.chromium.launch(headless=True, args=args)
             self.logger.info("Playwright browser initialized successfully")
         except Exception as e:
             self.logger.error(f"Failed to initialize Playwright browser: {str(e)}")
@@ -136,6 +138,7 @@ class UnifiedWebScraper:
         try:
             context = await self.browser.new_context(user_agent=self.user_agent.random)
             page = await context.new_page()
+            await stealth_async(page)
             await page.goto(url, wait_until="networkidle", timeout=self.initial_timeout * 1000)
             
             pdf_links = await page.evaluate("""
@@ -183,6 +186,7 @@ class UnifiedWebScraper:
             ignore_https_errors=True,
         )
         page = await context.new_page()
+        await stealth_async(page)
         try:
             await page.goto(url, wait_until="networkidle", timeout=timeout * 1000)
             
@@ -212,13 +216,15 @@ class UnifiedWebScraper:
             raise
 
     async def scrape_with_headful_playwright(self, url, timeout):
-        browser = await self.playwright.chromium.launch(headless=False)
+        args = ["--disable-blink-features=AutomationControlled"]
+        browser = await self.playwright.chromium.launch(headless=False, args=args)
         context = await browser.new_context(
             user_agent=self.user_agent.random,
             viewport={"width": 1920, "height": 1080},
             ignore_https_errors=True,
         )
         page = await context.new_page()
+        await stealth_async(page)
         try:
             await page.goto(url, wait_until="networkidle", timeout=timeout * 1000)
             
