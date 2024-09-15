@@ -8,11 +8,17 @@ from utils.scraper import UnifiedWebScraper
 import asyncio
 import aiohttp
 from utils.file_utils import read_file, write_file
+import re
 
 class ReferenceProcessor:
     def __init__(self, data_dir):
         self.data_dir = data_dir
         self.logger = logging.getLogger(__name__)
+
+    @staticmethod
+    def clean_filename(filename):
+        # Remove or replace characters not allowed in Windows filenames
+        return re.sub(r'[<>:"/\\|?*]', '_', filename)
 
     async def process_references(self, source_paper_name):
         source_paper_dir = os.path.join(self.data_dir, source_paper_name)
@@ -43,11 +49,12 @@ class ReferenceProcessor:
         os.makedirs(scraped_dir, exist_ok=True)
 
         async with aiohttp.ClientSession() as session:
-            scraper = UnifiedWebScraper(session=session)
+            scraper = UnifiedWebScraper(session=session, max_concurrent_tasks=5, initial_timeout=30)
             await scraper.initialize()
 
-            for ref_name, ref_data in list(references_to_process.items()):
-                ref_dir = os.path.join(scraped_dir, ref_name)
+            async def process_reference(ref_name, ref_data):
+                clean_ref_name = self.clean_filename(ref_name)
+                ref_dir = os.path.join(scraped_dir, clean_ref_name)
                 os.makedirs(ref_dir, exist_ok=True)
 
                 successful_scrape = False
@@ -58,7 +65,7 @@ class ReferenceProcessor:
                             write_file(os.path.join(ref_dir, f"link_{i+1}.md"), content)
                             successful_scrape = True
                     except Exception as e:
-                        self.logger.error(f"Error scraping link {link} for reference {ref_name}: {str(e)}")
+                        self.logger.error(f"Error scraping link {link} for reference {clean_ref_name}: {str(e)}")
 
                 if successful_scrape:
                     md_files = [f for f in os.listdir(ref_dir) if f.endswith('.md')]
@@ -67,24 +74,35 @@ class ReferenceProcessor:
                             (os.path.join(ref_dir, f) for f in md_files),
                             key=os.path.getsize
                         )
-                        target_file = os.path.join(source_paper_dir, f"{ref_name}_full.md")
+                        target_file = os.path.join(source_paper_dir, f"{clean_ref_name}_full.md")
                         shutil.move(largest_file, target_file)
                         
                         if os.path.getsize(target_file) < 60 * 1024:
                             os.remove(target_file)
-                            self.logger.warning(f"Scraped content for {ref_name} is less than 60KB")
-                            failed_scrapes[ref_name] = {"reason": "Content less than 60KB", "links": ref_data["links"]}
+                            self.logger.warning(f"Scraped content for {clean_ref_name} is less than 60KB")
+                            return ref_name, {"reason": "Content less than 60KB", "links": ref_data["links"]}, None
                         else:
-                            self.logger.info(f"Successfully processed reference {ref_name}")
-                            successful_scrapes[ref_name] = {"file": f"{ref_name}_full.md", "size": os.path.getsize(target_file)}
-                            if ref_name in failed_scrapes:
-                                del failed_scrapes[ref_name]
+                            self.logger.info(f"Successfully processed reference {clean_ref_name}")
+                            return ref_name, None, {"file": f"{clean_ref_name}_full.md", "size": os.path.getsize(target_file)}
                     else:
-                        self.logger.warning(f"No markdown files found for reference {ref_name}")
-                        failed_scrapes[ref_name] = {"reason": "No markdown files created", "links": ref_data["links"]}
+                        self.logger.warning(f"No markdown files found for reference {clean_ref_name}")
+                        return ref_name, {"reason": "No markdown files created", "links": ref_data["links"]}, None
                 else:
-                    self.logger.warning(f"Failed to scrape any content for reference {ref_name}")
-                    failed_scrapes[ref_name] = {"reason": "Failed to scrape any content", "links": ref_data["links"]}
+                    self.logger.warning(f"Failed to scrape any content for reference {clean_ref_name}")
+                    return ref_name, {"reason": "Failed to scrape any content", "links": ref_data["links"]}, None
+
+            tasks = [process_reference(ref_name, ref_data) for ref_name, ref_data in references_to_process.items()]
+            results = await asyncio.gather(*tasks)
+
+            for ref_name, failed_data, success_data in results:
+                if failed_data:
+                    failed_scrapes[ref_name] = failed_data
+                    if ref_name in successful_scrapes:
+                        del successful_scrapes[ref_name]
+                elif success_data:
+                    successful_scrapes[ref_name] = success_data
+                    if ref_name in failed_scrapes:
+                        del failed_scrapes[ref_name]
 
             await scraper.close()
 
