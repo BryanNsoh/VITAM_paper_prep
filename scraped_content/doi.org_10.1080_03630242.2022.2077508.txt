@@ -1,0 +1,276 @@
+Skip to Main Content
+Taylor and Francis Online homepage
+Browse
+Search 
+Publish 
+Access provided byUniversity of Nebraska, Lincoln
+ Login  |  Register
+Add to Cart
+Home  All Journals  Women & Health  List of Issues  Volume 62, Issue 5  Self-esteem, stress, and depressive symp ....
+Enter keywords, authors, DOI, etc
+ Search in:
+This Journal
+ 
+Advanced search
+Publication Cover 
+Women & Health 
+Volume 62, 2022 - Issue 5
+Submit an article Journal homepage
+ Full access
+225
+Views
+3
+CrossRef citations to date
+0
+Altmetric
+Listen
+Research Article
+Self-esteem, stress, and depressive symptoms among Jordanian pregnant women: social support as a mediating factor
+Rasmieh M. Al-Amer , RN, PhD,Malakeh Z. Malak , RN, CNS, PhDORCID Icon &Maram M. Darwish , MD, MRCS
+Pages 412-420 | Received 12 Nov 2021, Accepted 09 May 2022, Published online: 22 May 2022
+Cite this article https://doi.org/10.1080/03630242.2022.2077508 CrossMark LogoCrossMark
+In this article
+ABSTRACT
+Introduction
+Materials and methods
+Results
+Discussion
+Acknowledgements
+Disclosure statement
+Additional information
+References
+Taylor & Francis Online
+Top
+ Full Article
+ Figures & data
+ References
+ Citations
+ Metrics
+ Reprints & Permissions
+ View PDFView EPUB
+ABSTRACT
+This study purposed to assess the mediating role of social support between stress, depressive symptoms, and self-esteem among Jordanian pregnant women. Across-sectional study recruited a total of 538 pregnant Jordanian women using a cluster stratified random sampling technique, during the period from September 2019 to February 2020. The study used the following measures: The Perceived Stress Scale (PSS), Beck’s Depression Inventory (BDI), Rosenberg Self-Esteem Scale, and Multidimensional Social Support Scale (MSPSS). Descriptive statistics and inferential statistics were used to test the mediating effect of social support in terms of the association between depression and self-esteem. The results were considered significant if p ≤ .05. The findings showed that 75.6% of participants had moderate-to-high stress levels. High levels of stress, depressive symptoms, and low self-esteem were highly correlated with low social support (p < .05). Depressive symptoms predict the self-esteem (F(2, 537) = 158.631 p < .05). Social support significantly mediates the relationship between the depressive symptoms and self-esteem with p = .01. Thus, during the antenatal care, administration of screening tools to identify pregnant women with low social support levels and at risk of developing psychological difficulties would allow primary healthcare to promote for positive health outcomes for the mothers and the babies.
+
+KEYWORDS: Depressionpregnant womenself-esteemsocial supportstress
+Introduction
+Pregnancy is a turning point that invokes a wide range of emotions ranging from delight and happiness to fear and devastation (Koh et al. Citation2019). Pregnancy is a stressful time, which entails numerous physiological and psychological changes (Lagadec et al. Citation2018). Excessive stress during pregnancy could progress to antepartum depression, which in turn would negatively impact the wellbeing of the mother and the baby (Cohen and Wills Citation1985; Kingston et al. Citation2015; Lin et al. Citation2017).
+
+Women with antepartum depression are at higher risk to experience premature birth (Mochache et al. Citation2018), suicidal ideation, or successfully attempting suicide (Gelaye, Kajeepeta, and Williams Citation2016), which in turn negatively impact maternal and fetal outcomes (Jahan et al. Citation2021). Women in the low- and middle-income countries, such as the Middle East, are more vulnerable to antepartum stress and depressive symptoms, in particular, with sub-optimal social support (Gelaye, Kajeepeta, and Williams Citation2016) because of lack of agency, which in turn would affect their ability to take decision, high prevalence poverty rate, and the continuous conflict in the region (Yehia et al. Citation2020; Yehia, Callister, and Hamdan-Mansour Citation2013).
+
+Self-esteem is also a mental health indicator and is defined by Rosenberg (Citation1965, 5) as “the evaluation which the individual makes and customarily maintains with regard to himself or herself: it expresses an attitude of approval or disapproval toward oneself”. A recent study held among 396 pregnant women reported that negative psychological reactions including low self-esteem during pregnancy predict antenatal depression (Koh et al. Citation2019). However, social support is a vital factor that would enhance women’s self-esteem when they experience low self-worth (Phoosuwan, Eriksson, and Lundberg Citation2018), for example, support from partners improves women’s self-esteem (Maçola, Vale, and Carmona Citation2010), and reduce antepartum depression (Jesse, Kim, and Herndon Citation2014; Schwab-Reese, Schafer, and Ashida Citation2017). Women who experience lower levels of social support are two times more at risk to experience antepartum depressive symptoms (Biaggi et al. Citation2016).
+
+Arab women live in extended families, in which a daughter-in-law has to take care of her husband, her in-laws, and any family member who still lives with the family (Sibai and Yamout Citation2012), and this would add burden and stress, both physical and emotional, on pregnant women who live in such community. Also, women living in Arab communities may not reveal their feelings of low mood and depression to health care providers to avoid the stigma of mental illness (Al-Amer Citation2015). According to Arab culture, psychological difficulties should be discussed within the family first, and health seeking decisions should be taken within the family after consulting with their elderlies (Al-Amer Citation2015; Youssef and Deane Citation2006). Not to mention that mental health services in such communities are primitive and not well developed (Al-Amer Citation2015).
+
+The stress-buffering theory established by (Cohen and Wills Citation1985) has postulated that social support directly and indirectly enhances people’s sense of self-worth or self-esteem (primary effect) (Biaggi et al. Citation2016; Cohen and Wills Citation1985) and modify people’s wellbeing by buffering the negative influence of potentially stressful life events (buffering factor) (Cohen and Wills Citation1985). Although numerous studies have responded and tested stress, depression, self-esteem, and social support among pregnant women in the western communities (Bedaso et al. Citation2021; Schwab-Reese, Schafer, and Ashida Citation2017), there is a lack of studies testing these important facets among women living in the Middle East and to the best of our knowledge, no study has tested the role of social support in mediating the relationship between stress, depressive symptoms, and self-esteem.
+
+The data results from this study could form a baseline for understanding the potential mediator role of social support in the relationship between antepartum, stress, depressive symptoms, and self-esteem among Arab women living in the Middle East region. Understanding the mediating effects of social support on the relationship between stress, depressive symptoms, and self-esteem is critical for developing interventional strategies as part of a comprehensive prenatal care for pregnant women in developing countries.
+
+The study is guided by the following research questions:
+
+What are the levels of perceived stress, depressive symptoms, self-esteem, and social support among Jordanian pregnant women?
+
+What is the nature of the relationship between stress, depressive symptoms, social support, and self-esteem?
+
+What are the effects of social support on stress, depressive symptoms, and self-esteem?
+
+Does social support mediate the relationship between stress, depressive symptoms, and self-esteem?
+
+Materials and methods
+Study design and settings
+This study used a cross-sectional, descriptive correlational design to collect data from 555 pregnant women who attended primary health care centers in different locations in Amman Governorate during the period from September 2019 to February 2020. According to the department of statistics in Jordan (2017–2018), Amman is the largest city in Jordan and the fifth-largest city in the Arab world, and around 42% of the population in Jordan live in it (Department of Statistics 2020). These health centers are comprehensive health care centers that provide services concerning maternal and child health.
+
+Population and sampling
+The participants of this study were all Jordanian pregnant women who attended primary health care centers in Amman Governorate (the capital of Jordan). In order to choose the center that may participate in this study, we used a cluster stratified random sampling technique representing (west, east, north, and south of Amman Governorate). Based on the mentioned sampling technique, two health centers were chosen from each region. After that, a convenience sample of pregnant women in different pregnancy periods was selected from each health center.
+
+This study used G* power software, version 3.0.10, to calculate the sample size that is sufficient to answer the research questions proposed by this study (Faul et al. Citation2007). The effect size was set at 0.04, p ≤ .05, power at 0.95, and with 3 predictors, the required sample size was 434. To be conservative and compensate for low participation, withdrawal of the participants from the study, the sample was increased to 550. The inclusion criteria were pregnant women, age ≥20 years, not categorized as a high-risk pregnancy, and willing to participate in this study. The exclusion criteria were pregnant women with psychological, phphysiological,r intellectual impairments that might impede the communication.
+
+Measures
+This study used a structured interview guide, which consisted of four questionnaires
+
+The Socio-demographic data that include age of the pregnant woman, education, job, monthly income, checkups during the current pregnancy, health problems during the previous pregnancy, and the sex of the fetus.
+
+The Perceived Stress Scale (PSS) The Arabic version of this scale was used to measure the perceived stress levels during the previous month. It is a self-administered scale that is composed of 10 items. It is anchored on a five-point format, which ranges from zero = never to four = very often. The score of this scale ranges from 0 to 40; the levels of stress also were categorized as follows: 0–13 low, 14–26 = moderate, and 27–40 = high. The reported consistency of the Arabic version of this scale was alpha = 0.80 (Almadi et al. Citation2012).
+
+Beck’s Depression Inventory (BDI) The Arabic version of this scale was used (West 1985). The BDI is a self-administered rating scale that consists of 21 items. The BDI asked the respondent to rate their symptoms and attitudes of depression using a scale ranging from 0 (I do not feel sad) to 3 (I am so sad or unhappy that I can’t stand it). The cutoff scores of this scale were as follows: 0–9 = no depression, 10–15 = mild depression, 16–23 = moderate depression, 24–36 = severe depression, and >37 = extreme depression. The reported internal consistency of the Arabic version of the scale is 0.87.
+
+Rosenberg Self-Esteem Scale Rosenberg (Citation1965) developed this scale to assess the individual’s self-worth. It is a self-administered rating scale, which consists of 10-items; it is anchored on the following format, 3 = strongly agree to 0 = strongly disagree. The score of this scale ranges from 0 to 30, in which a score of <15 = low self-esteem; scores between 15 and 25 = normal, and >25 = high self-esteem (Rosenberg Citation1965). This scale is reliable with a Cronbach’s alpha of .88 (Rosenberg Citation1965). This study used the Arabic version of the Rosenberg Self-Esteem Scale that has good internal consistency with a Cronbach’s alpha of 0.72 (Zaidi et al. Citation2015).
+
+Multidimensionnel Social Support Scale (MSPSS) This scale evaluated the perceptions of social support (Zimet et al. Citation1988). It is composed of 12 items. The overall scale mean was reported to range from 1 to 7), with the following levels of social support; 1–2.9 = low support, 3–5 social support, and 5.1–7 high. The Cronbach’s alpha of this scale was 0.88 (Zimet et al. Citation1988). This study used the Arabic version of this scale, which has good consistency (Cronbach’s alpha = 0.88) (Alzayyat, Al-Gamal, and Ahmad Citation2015).
+
+Data collection procedure
+After obtaining a written consent, the study guide was distributed to each eligible pregnant woman. The researcher approached the pregnant women during their routine visits to the health care centers and explained the study's purpose to potential participants. In addition, eligible participants were informed that their participation in this study is voluntary, and they can withdraw from the study at any time without penalties.
+
+Those who met the inclusion criteria and agreed to participate were handed a sealed envelope that consisted of the study-related questionnaires. The second researcher made herself available to answer any question or any queries by the participants. Once the women finished their questionnaires, they were asked to leave the questionnaires on the reception desk, and after that, the researcher collected the envelopes. It is worth mentioning that the time taken to answer this study survey was 20–30 minutes. This study was approved by the ethics committee at Jordan Ministry of Health.
+
+Statistical analysis
+For data analysis, this study used the SPSS version 23 program. The study used descriptive statistics (frequency, % age, mean, standard deviation, and range). A preliminary data check was used to ensure that no violation of the statistical assumptions took place. This study used Pearson’s correlation coefficient, linear regression, and hierarchical regression was used to test the mediating effect of social support in terms of the association between depression and self-esteem. The mediation role of social support on the study-related variables (antepartum depressive symptoms and self-esteem) was tested using hierarchical regression analysis, which was used successfully by a wide range of studies (Herbell and Zauszniewski Citation2019; Sonney and Insel Citation2019). For this statistical test, we made sure that we did not violate the assumptions, this was confirmed by meeting the following criteria: 1) variations in perceived stress and depressive symptoms predicted variations in self-esteem, 2) variation in stress and depressive symptoms predicted variation in the mediators (social support), and 3) social support modified the levels of self-esteem and depressive symptoms when it was added to the model. The results were considered significant if p ≤ .05.
+
+Results
+A total of 555 questionnaires were distributed, 12 questionnaires were excluded because they were incomplete with remarkable missing data, making the total completed questionnaires 543 with a response rate of 96.9%. Hence, the total sample of this study was 538 pregnant women; the mean (± SD) of 29.6 (±6.1) years; 44.7% of them was in the second trimester of their pregnancy, 82.8% reported to have regular visits to their doctors for checkups in this current pregnancy, and in relation to the fetus sex, 60% knew the sex of the fetus. Around 70% of the participants had postgraduate education and 44.2% had jobs. More than one-quarter of the participants reported to have monthly income <750 JOD (Table 1).
+
+Table 1. Socio-demographic characteristics of the participants (N = 538)
+
+Download CSVDisplay Table
+Table 2 shows that around 70% of the study participants had moderate levels of stress, 13.2% and 10.7% experienced severe and extreme levels of depression, respectively. Further, the table illustrates that 10.7% reported having low self-esteem and 40.9% reported having high levels of social support.
+
+Table 2. Levels of perceived stress, social support, and self-esteem among the study sample (N = 538)
+
+Download CSVDisplay Table
+Associations between stress, depressive symptoms, self-esteem, and social support
+The study used Pearson’s correlation coefficient to assess the magnitude of the relationship between perceived stress, self-esteem, depressive symptoms, and social support. The correlation levels between social support and stress were significantly negative; similarly negative association between the levels of social support and depression symptoms was more pronounced (Table 3). On the other hand, Table 3 shows that social support positively correlated with self-esteem.
+
+Table 3. Correlation matrix between social support, depression, and self-esteem (N = 538)
+
+Download CSVDisplay Table
+Influence of social support on stress, depressive symptoms, and self-esteem
+The study used a linear regression test to evaluate the impact of social support on stress, depressive symptoms, and self-esteem. Social support had a significant effect on depression and self-esteem (Table 4). However, the regression analysis showed that social support was an insignificant predictor of the perceived stress in our sample, hence, perceived stress was excluded from further analysis.
+
+Table 4. Influencing of social support on stress, depression, and self-esteem: Regression analyses
+
+Download CSVDisplay Table
+The role of social support on the relationships between the depression and self-esteem
+A preliminary analysis determined that antepartum depressive symptoms were a significant predictor of self-esteem (F (2,537) = 158.631, p < .005) with 0.369% of the variance in self-esteem was explained. Thus, in the regression model, we entered depression as a predictor to self-esteem. The results indicated that depression had a direct negative effect on self-esteem (B = _.575, p = .005).
+
+Next, social support was entered into the regression model as a second block. After we added the social support as an independent factor to the regression model, the standardized beta of antepartum depression changed from _ 0.575 to _0.484. The p-value also changed from p = .001 to p = .01; this change indicated that social support played a mediating role between depression and self-esteem.
+
+Discussion
+This study aimed to evaluate the levels of stress, depressive symptoms, self-esteem, and social support among pregnant women in Jordan and to investigate the role of social support on the study-related variables. The findings of this study revealed that more than two-third of the pregnant women who participated in this study experienced moderate levels of stress, more than 40% of them had moderate to extremely severe levels of depression, and 11% of them had low levels of self-esteem. However, around half of the current study participants reported having moderate levels of social support.
+
+The study findings showed that most of our participants experienced a moderate level of stress with a Mean ± SD (17.45 ± 6.18) and around two-thirds of them suffered from significant stressors. Similar findings were reported by a study among Iranian pregnant women (Shafaie et al. Citation2018), this similarity could have stemmed from the close relative nature of the norms, cultures, and religious practices of the Iranian community to the Jordanian community. However, a study from Saudi Arabia reported higher levels of stress among pregnant women in comparison to the levels of stress reported by the current study participants (Ahmed et al. Citation2017), this could be related to the conservative nature of Saudi culture. On the other hand, pregnant women in western communities, such as Canada (Robinson et al. Citation2016) reported lower levels of stress than the current study’s participants, this could be attributed to the fact that women in the developed world have more welfare and independence than women in developing countries.
+
+More than one-third of pregnant women in our study experienced significant levels of depression. This lends support to previous literature in which a previous study reported that antepartum depression is highly prevalent among pregnant women (Sheeba et al. Citation2019). Further, our study reported lower rates of depression in comparison to pregnant women in Saudi Arabia in which depression was reported to a rate of (57.5%) (Bawahab., Alahmadi, and Ibrahim Citation2017), this could be explained by the lack of understanding of the positive influence of the role of their partners during childbirth; importantly support by a husband is neither acceptable nor appreciated (Lunda, Minnie, and Benade Citation2018). Further, 11% of the study participants reported low self-worth; this is plausible because studies reported that those who suffer from high levels of stress, and depression suffer from low self-esteem (Sowislo and Orth Citation2013).
+
+Moreover, our study findings illustrate that social support is associated with perceived stress, depression, and self-esteem among pregnant women. Pregnant Jordanian women who had a high level of social support showed lower symptoms of stress and significantly lower levels of depressive symptoms. This is consistent with Schwab-Reese, Schafer, and Ashida (Citation2017) who reported that the perceived levels of stress and depressive symptoms were associated with the levels of social support independently. However, at multiple points, social support did not strongly mediate the relationship between stress and maternal mental health among pregnant women (Schwab-Reese, Schafer, and Ashida (Citation2017).
+
+While few studies in Jordan have investigated the psychological reactions among pregnant (Yehia et al. Citation2020), no study has examined the mediation role of social support, between stress, depression, and self-esteem in the peripartum period. This means that previous studies did not fully capture the impact of depression on pregnancy, and vice versa. This study has theorized perceived stress and depressive symptoms to better understand how social support may buffer the impact of these psychological reactions in pregnancy.
+
+This study’s findings indicated that social support was highly correlated with depressive symptoms and self-esteem in pregnant women. Therefore, we further evaluated the mediation role of social support between perceived stress and depressive symptoms and depressive symptoms and self-esteem. Therefore, social support was tested as a mediator between stress experiences and indicators of mental wellbeing. Social support was found to mediate the relationship between depressive symptoms and self-esteem.
+
+Further, our data revealed that social support is a strong mediator of the relationship between depressive symptoms and self-esteem among our sample. Our findings are in line with a study, which reported that social support fully mediates the relationship between self-esteem and depression (Giurgescu et al. Citation2015).
+
+Our study revealed important findings for the collectivist communities in which the favorable levels of social support are high and may buffer the influence of depression on women’s self-esteem, which in turn would result in positive mother and child outcomes. Hence, we strongly believe that health care providers would benefit from using social support to enhance the mental health status of pregnant women and enhance the positive outcomes of maternal and child health. Also, policymakers and educators would benefit from developing health education programs and/or health training programs that emphasize using social support as a meaningful factor as a coping strategy when depressive symptoms are experienced. Also, we recommend that longitudinal studies should be conducted to fully investigate the social support effect during time-series analysis to determine if there is a time where social support has the highest impact and tailor health care around it.
+
+However, the findings of this study should be seen within its limitations, for example, using a cross-sectional design could preclude the definite cause and effect relationship. The participants of this study are Arab women who were healthy, and thus the results of this study may not be generalizable to all pregnant women. Although our study has the mentioned limitations, we believe this study highlighted important facets such as the levels of psychological reactions among pregnant Arab women and focused on examining the mediating role of social support; these data will provide a base for future research.
+
+Ethical approval
+All procedures performed in studies involving human participants were in accordance with the ethical standards of the ethics committee at of the Jordanian Ministry of Health (JMOH).
+
+Acknowledgement
+The research team would like to thank all women who generously shared their time and their experience for the purpose of this study. Also, we thank all the workers at the health centers who facilitated the data collection procedure and the statisticians at the department of statistics who helped us in the sampling technique.
+
+Disclosure statement
+No potential conflict of interest was reported by the author(s).
+
+Additional information
+Funding
+The author(s) reported there is no funding associated with the work featured in this article.
+References
+Ahmed, A. E., A. N. Albalawi, A. A. Alshehri, R. M. AlBlaihed, and M. A. Alsalamah. 2017. Stress and its predictors in pregnant women: A study in Saudi Arabia. Psychology Research and Behavior Management 10:97–102.
+ PubMed Web of Science ®Google Scholar
+Al-Amer, R. 2015. Depression and self-care in Jordanian adults with diabetes: The POISE study.
+ Google Scholar
+Almadi, T., I. Cathers, A. M. H. Mansoour, and C. M. Chow. 2012. An Arabic version of the Perceived Stress Scale: Translation and Validation Study. International Journal of Nursing Studies 49 (1):84–89.
+ PubMed Web of Science ®Google Scholar
+Alzayyat, A., E. Al-Gamal, and M. M. Ahmad. 2015. Psychosocial correlates of Internet addiction among Jordanian university students. Journal of Psychosocial Nursing and Mental Health Service 53 (4):43–51. doi:https://doi.org/10.3928/02793695-20150309-02.
+ PubMed Web of Science ®Google Scholar
+Bawahab, J. A., J. R. Alahmadi, and A. M. Ibrahim. 2017. Prevalence and determinants of antenatal depression among women attending primary health care centers in Western Saudi Arabia. Saudi Medical Journal 38 (12):1237–42.
+ PubMed Web of Science ®Google Scholar
+Bedaso, A., J. Adams, W. Peng, and D. Sibbritt. 2021. Prevalence and determinants of low social support during pregnancy among Australian women: A community-based cross-sectional study. BMC Reproductive Health 18 (158).
+ Google Scholar
+Biaggi, A., S. Conroy, S. Pawlby, and C. M. Pariante. 2016. Identifying the women at risk of antenatal anxiety and depression: A systematic review. Journal of Affective Disorders 191:62–77.
+ PubMed Web of Science ®Google Scholar
+Cohen, S., and T. A. Wills. 1985. Stress, social support, and the buffering hypothesis. Psychological Bulletin 98 (2):310. doi:https://doi.org/10.1037/0033-2909.98.2.310.
+ PubMed Web of Science ®Google Scholar
+Faul, F., E. Erdfelder, A. G. Lang, and A. Bucher. 2007. G*power 3: A flexible statistical power analysis program for the social, behavioral, and biomedical sciences. Behavior Research Methods 39 (2):175–91. doi:https://doi.org/10.3758/BF03193146.
+ PubMed Web of Science ®Google Scholar
+Gelaye, B., S. Kajeepeta, and M. A. Williams. 2016. Suicidal ideation in pregnancy: An epidemiologic review. Archives of Women's Mental Health 19:741–51. doi:https://doi.org/10.1007/s00737-016-0646-0.
+ PubMed Web of Science ®Google Scholar
+Giurgescu, C., D. P. Misra, S. Sealy-Jefferson, C. H. Caldwell, T. N. Templin, J. C. Slaughter-Acey, and T. L. Osypuk. 2015. The impact of neighborhood quality, perceived stress, and social support on depressive symptoms during pregnancy in African American Women. Social Science & Medicine 130:172–80.
+ PubMed Web of Science ®Google Scholar
+Herbell, K., and J. A. Zauszniewski. 2019. Stress experiences and mental health of pregnant women: The mediating role of social support. Issues in Mental Health Nursing 40 (7):613–20. doi:https://doi.org/10.1080/01612840.2019.1565873.
+ PubMed Web of Science ®Google Scholar
+Jahan, N., T. R. Went, W. Sultan, A. Sapkota, H. Khurshid, I. A. Qureshi, and M. Alfonso. 2021. Untreated depression During pregnancy and its effects on pregnancy outcomes: A systematic review. Cureus 13 (8):e 17251. doi:https://doi.org/10.7759/cureus.17251.
+ Web of Science ®Google Scholar
+Jesse, D. E., H. Kim, and C. Herndon. 2014. Social support and self-esteem as mediators between stress and antepartum depressive symptoms in rural pregnant women. Research in Nursing & Health 37 (3):241–52.
+ PubMed Web of Science ®Google Scholar
+Kingston, D., S. McDonald, M. -P. Austin, S. Tough, and J. Pawluski. 2015. Association between prenatal and postnatal psychological distress and toddler cognitive development: A systematic review. PloS one. 10 (5):e0126929. doi:https://doi.org/10.1371/journal.pone.0126929.
+ PubMed Web of Science ®Google Scholar
+Koh, M., S. Ahn, J. Kim, S. Park, and J. Oh. 2019. Pregnant women’s antenatal depression and influencing factors. Korean Journal of Women Health Nursing 25 (1):112–23. doi:https://doi.org/10.4069/kjwhn.2019.25.1.112.
+ PubMedGoogle Scholar
+Lagadec, N., M. Steinecker, A. Kapassi, A. M. Magnier, J. Chastang, S. Robert, N. Gaouaou, and G. Ibanez. 2018. Factors influencing the quality of life of pregnant women: A systematic review. BMC Pregnancy Childbirth 455. doi:https://doi.org/10.1186/s12884-018-2087-4.
+ PubMed Web of Science ®Google Scholar
+Lin, Y., J. Xu, J. Huang, Y. Jia, J. Zhang, C. Yan, and J. Zhang. 2017. Effects of prenatal and postnatal maternal emotional stress on toddlers’ cognitive and temperamental development. Journal of Affective Disorders 207:9–17. doi:https://doi.org/10.1016/j.jad.2016.09.010.
+ PubMed Web of Science ®Google Scholar
+Lunda, P., C. Minnie, and P. Benade. 2018. Women’s experiences of continuous support during childbirth: A meta-synthesis. BMC Pregnancy and Childbirth 18:167.
+ PubMed Web of Science ®Google Scholar
+Macola, L., I. N. Vale, and V. E. Carmona. 2010. Assessment of self-esteem in pregnant women using Rosenberg’s Self-Esteem Scale. Revista da Escola de Enfermagem da USP 44 (3):570–77.
+ PubMed Web of Science ®Google Scholar
+Mochache, K., M. Mathai, O. Gachuni, A. V. Stoep, and M. Kumar. 2018. Depression during pregnancy and preterm delivery: A prospective cohort study among women attending antenatal clinic at Pumwani Maternity Hospital. BMC Annals of General Psychiatry 17(21). doi:https://doi.org/10.1186/s12991-018-0202-6.
+ PubMed Web of Science ®Google Scholar
+Phoosuwan, N., L. Eriksson, and P. C. Lundberg. 2018. Antenatal depressive symptoms during late pregnancy among women in a north-western province in Thailand: Prevalence and associated factors. Asian Journal of Psychiater 36:102–07.
+ PubMed Web of Science ®Google Scholar
+Robinson, A. M., K. M. Benzies, S. L. Cairns, T. Fung, and S. C. Tough. 2016. Who is distressed? A comparison of psychosocial stress in pregnancy across seven ethnicities. BMC Pregnancy and Childbirth 16 (1):215.
+ Google Scholar
+Rosenberg, M. 1965. Rosenberg Self-Esteem Scale (RSE). Acceptance and commitment therapy. Measures Package 61 (52):18.
+ Google Scholar
+Schwab-Reese, L. M., E. J. Schafer, and S. Ashida. 2017. Associations of social support and stress with postpartum maternal mental health symptoms: Main effects, moderation, and mediation. Women & Health 57 (6):723–40.
+ PubMed Web of Science ®Google Scholar
+Shafaie, F. S., M. Mirghafourvand, M. Rahmati, P. Nouri, and M. Bagherinia. 2018. Association between psychological status with perceived social support in pregnant women referring to Tabriz health centers. The Journal of Maternal-Fetal & Neonatal Medicine 31 (12):1554–60.
+ PubMed Web of Science ®Google Scholar
+Sheeba, B., A. Nath, C. Metgud, M. Krishna, S. Venkatesh, J. Vindhya, and G. Murthy. 2019. Prenatal depression and its associated risk factors among pregnant women in Bangalore: A hospital based prevalence study. Frontiers in Public Health 7.
+ PubMed Web of Science ®Google Scholar
+Sibai, A. M., and R. Yamout. 2012. Family-based old-age care in Arab countries. In Between tradition and modernity Population dynamics in Muslim countries, 63–76. Springer.
+ Google Scholar
+Sonney, J., and K. C. Insel. 2019. Exploring the intersection of executive function and medication adherence in school-age children with asthma. Journal of Asthma 56 (2):179–89. doi:https://doi.org/10.1080/02770903.2018.1441870.
+ PubMed Web of Science ®Google Scholar
+Sowislo, J. F., and U. Orth. 2013. Does low self-esteem predict depression and anxiety? a meta-analysis of longitudianl studies. Psychological Bulletin 139:213.
+ PubMed Web of Science ®Google Scholar
+Yehia, D., L. Callister, and A. Hamdan-Mansour. 2013. Prevalence and predictors of postpartum depression among Arabic Muslim Jordanian women serving in the military. Journal of Perinatal & Neonatal Nursing 27 (1):25–33. doi:https://doi.org/10.1097/JPN.0b013e31827ed6db.
+ PubMed Web of Science ®Google Scholar
+Yehia, D. B. M., M. Z. Malak, N. N. Al‐thwabih, R. R. Awad, E. S. Al‐ajouri, S. S. Darwish, and A. S. Hamad. 2020. Psychosocial factors correlate with fatigue among pregnant women in Jordan. Perspectives in Psychiatric Care 56 (1):46–53. doi:https://doi.org/10.1111/ppc.12372.
+ PubMed Web of Science ®Google Scholar
+Youssef, J., and F. P. Deane. 2006. Factors influencing mental-health help-seeking in Arab-speaking communities in Sydney, Australia. Mental Health, Religion & Culture 9 (1):43–66.
+ Google Scholar
+Zaidi, U., S. S. Awad, E. M. Mortada, H. D. Qasem, and G. F. Kayal. 2015. Psychometric evaluation of Arabic version of self-esteem, psychological well-being and impact of weight on quality of life questionnaire (IWQOL-Lite) in female student sample of PNU. European Medical, Health and Pharmaceutical Journal 8 (2). doi:https://doi.org/10.12955/emhpj.v8i2.703.
+ Google Scholar
+Zimet, G. D., N. W. Dahlem, S. G. Zimet, and G. K. Farley. 1988. The multidimensional scale of perceived social support. Journal of Personality Assessment 52 (1):30–41. doi:https://doi.org/10.1207/s15327752jpa5201_2.
+ Web of Science ®Google Scholar
+Download PDF
+Related research 
+People also read
+Recommended articles
+Cited by
+3
+Information for
+Authors
+R&D professionals
+Editors
+Librarians
+Societies
+Open access
+Overview
+Open journals
+Open Select
+Dove Medical Press
+F1000Research
+Opportunities
+Reprints and e-prints
+Advertising solutions
+Accelerated publication
+Corporate access solutions
+Help and information
+Help and contact
+Newsroom
+All journals
+Books
+Keep up to date
+Register to receive personalised research and resources by email
+Sign me up
+Taylor and Francis Group Facebook pageTaylor and Francis Group X Twitter pageTaylor and Francis Group Linkedin page
+Taylor and Francis Group Youtube pageTaylor and Francis Group Weibo page
+Copyright © 2024Informa UK Limited Privacy policy Cookies Terms & conditions Accessibility
+Registered in England & Wales No. 3099067
+5 Howick Place | London | SW1P 1WG
+
+Taylor and Francis Group
+×
